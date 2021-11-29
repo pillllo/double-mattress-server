@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,40 +10,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User {
-  id            Int      @id @default(autoincrement())
-  userId        String   @unique
-  firstName     String
-  paid          Boolean  @default(false)
-  currency      String
-  linkedUserId  String
-}
-
-
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
 model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+  id           Int           @id @default(autoincrement())
+  // TODO: Reference by id of GUID userId
+  userId       String
+  user         User          @relation(fields: [userId], references: [userId])
+  firstName    String
+  paid         Boolean       @default(false)
+  currency     String?
+  // TODO: adjust variable naming in frontend
+  linkedUserId String
+  linkedUser   Profile       @relation(fields: [userId], references: [userId])
+  transactions Transaction[]
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  userId    String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  transactionId   String   @unique
+  transactionType String
+  // TODO: Reference by id of GUID userId
+  userId          String
+  user            User     @relation(fields: [userId], references: [userId])
+  // TODO: Reference by id of GUID userId
+  otherUserId     String
+  otherUser       User     @relation(fields: [otherUserId], references: [userId])
+  amount          Int
+  currency        String
+  category        String
+  // TODO: settle on format & variable naming -> do we need it?
+  date            DateTime
+  description     String   @db.VarChar(255)
+  includeAvg      Boolean  @default(true)
 }
