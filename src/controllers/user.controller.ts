@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import mockUser from "../models/mockUser";
 import { getUsers } from "../models/db-json";
 
 /*
