@@ -56,7 +56,7 @@ async function getCoupleProfile(req: Request, res: Response) {
 // CONTROLLER FOR JSON SERVER
 //----------------------------------------------------------------
 
-async function getUserProfiles (req: Request, res: Response) {
+async function getUserProfiles(req: Request, res: Response) {
   try {
     const { userIds } = req.body;
     const users = getUsers(userIds);
