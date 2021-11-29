@@ -98,11 +98,7 @@ async function deleteTransaction(req: Request, res: Response) {
 // CONTROLLERS FOR JSON SERVER
 //----------------------------------------------------------------
 
-<<<<<<< HEAD
 async function getTransactionsForUsers(req: Request, res: Response) {
-=======
-async function getTransactionsForUsers (req: Request, res: Response) {
->>>>>>> main
   try {
     const { userIds, transactionsPerUser } = req.body;
 
@@ -114,10 +110,6 @@ async function getTransactionsForUsers (req: Request, res: Response) {
   }
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 const transactionController = {
   getTransactionsForUsers,
 };
