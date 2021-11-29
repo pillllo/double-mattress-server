@@ -21,6 +21,18 @@ async function getAllUser(req: Request, res: Response) {
   }
 }
 
+async function getTransactionsForUsers (req: Request, res: Response) {
+  try {
+    const { userIds, transactionsPerUser } = req.body;
+
+    const transactions = getTransactions(userIds, transactionsPerUser);
+    res.status(200).send(transactions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Could not get transactions.");
+  }
+}
+
 // Get all transactions of the couple (user and the partner)
 
 async function getAllCouple(req: Request, res: Response) {
