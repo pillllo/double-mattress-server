@@ -4,6 +4,8 @@ import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
 import { getTransactions } from '../models/db-json';
 
+/*
+
 // Get all transactions of the user
 // TODO: Modify controller
 async function getAllUser(req: Request, res: Response) {
@@ -88,12 +90,27 @@ async function deleteTransaction(req: Request, res: Response) {
   }
 }
 
+*/
+
+//----------------------------------------------------------------
+// CONTROLLERS FOR JSON SERVER
+//----------------------------------------------------------------
+
+async function getTransactionsForUsers (req: Request, res: Response) {
+  try {
+    const { userIds, transactionsPerUser } = req.body;
+
+    const transactions = getTransactions(userIds, transactionsPerUser);
+    res.status(200).send(transactions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Could not get transactions.");
+  }
+}
+
+
 const transactionController = {
-  getAllUser,
-  getAllCouple,
   getTransactionsForUsers,
-  addTransaction,
-  deleteTransaction,
 };
 
 export default transactionController;
