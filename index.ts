@@ -3,17 +3,21 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.create({
+  await prisma.transaction.create({
     data: {
+      transactionType: "expenses",
       userId: "user_1",
-      firstName: "Natalie",
+      amount: 10000,
       currency: "EUR",
-      linkedUserId: ["user_2", "user_3"],
+      category: "rent",
+      date: "random string",
+      description: "Apartment",
+      includeAvg: true,
     },
   });
 
-  const allUsers = await prisma.user.findMany();
-  console.dir(allUsers, { depth: null });
+  const allTransactions = await prisma.transaction.findMany();
+  console.dir(allTransactions, { depth: null });
 }
 
 main()
