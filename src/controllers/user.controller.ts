@@ -16,7 +16,7 @@ async function getUserProfile(req: Request, res: Response) {
 
 async function getUserProfiles (req: Request, res: Response) {
   try {
-    const userIds = req.body;
+    const { userIds } = req.body;
     const users = getUsers(userIds);
     res.status(200).send(users);
   } catch (error) {

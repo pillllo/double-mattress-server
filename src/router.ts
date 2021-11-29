@@ -15,6 +15,8 @@ router.get("/couple", userController.getCoupleProfile);
 
 // TRANSACTIONS
 
+router.get("/transactions", transactionController.getTransactionsForUsers);
+
 // Get all transactions of the user
 router.get("/transactions/me", transactionController.getAllUser);
 

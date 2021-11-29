@@ -26,3 +26,25 @@ export function getUsers (userIds: [string]): User[] {
   return result;
 }
 
+export function getTransactions (
+  userIds: [string],
+  transactionsPerUser?: number
+): Transaction[] {
+  let result: Transaction[] = [];
+  for (let userId of userIds) {
+    console.log('getTransactions() retrieving for userId: ', userId);
+    const userTransactions =
+      _db.transactions
+        .filter((tr: Transaction) => tr.userId === userId)
+        .sort((a: Transaction, b: Transaction) => {
+          const aDate = new Date(a.date).getTime();
+          const bDate = new Date(b.date).getTime();
+          return bDate - aDate;
+        })
+        .slice(0, transactionsPerUser || 30)
+    console.log(userTransactions.length);
+    result = result.concat(userTransactions);
+  }
+  return result;
+}
+
