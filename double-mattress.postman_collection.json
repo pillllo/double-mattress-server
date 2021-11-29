@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "996b7937-3c95-438e-aa6d-fb9c8e8ffcc0",
+		"name": "double-mattress",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userIds\": [\n        \"c4f2af8d-d47c-48ab-95f1-20f0a2f54a93\",\n        \"fb648d07-c4ff-4b0f-8361-521022c2a55a\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/transactions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userIds\": [\n        \"c4f2af8d-d47c-48ab-95f1-20f0a2f54a93\",\n        \"fb648d07-c4ff-4b0f-8361-521022c2a55a\"\n    ],\n    \"transactionsPerUser\": 100\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transactions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
