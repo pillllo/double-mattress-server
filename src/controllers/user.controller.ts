@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import mockUser from "../models/mockUser";
+import { getUsers } from "../models/db-json";
 
 // Get user profile
 async function getUserProfile(req: Request, res: Response) {
@@ -13,12 +14,23 @@ async function getUserProfile(req: Request, res: Response) {
   }
 }
 
+async function getUserProfiles (req: Request, res: Response) {
+  try {
+    const userIds = req.body;
+    const users = getUsers(userIds);
+    res.status(200).send(users);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not get profile for provided user(s)");
+  }
+}
+
 // Get couple profile (user profile and partner's profile)
 async function getCoupleProfile(req: Request, res: Response) {
   try {
     // Find profile of the user
     const { userId } = req.body;
-    const userProfile = mockUser.find((user) => user.userId === userId);
+    const userProfiles = getUserProfiles;
 
     // Get id of the account linked to the user
     const partnerId = userProfile?.linkedUserId;
@@ -38,6 +50,7 @@ async function getCoupleProfile(req: Request, res: Response) {
 
 const userController = {
   getUserProfile,
+  getUserProfiles,
   getCoupleProfile,
 };
 
