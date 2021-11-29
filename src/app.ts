@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import router from "./router";
-import jsonDb from "./models/db-json";
+// import jsonDb from "./models/db-json";
 
 const { PORT } = process.env;
 const app = express();

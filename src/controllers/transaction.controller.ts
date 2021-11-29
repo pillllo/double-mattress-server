@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
-import db from '../models/db-json';
-console.log(Object.keys(db).length);
+// import db from '../models/db-json';
+// console.log(Object.keys(db).length);
 
 // Get all transactions of the user
 async function getAllUser(req: Request, res: Response) {
