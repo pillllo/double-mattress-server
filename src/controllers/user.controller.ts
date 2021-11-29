@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import mockUser from "../models/mockUser";
 import { getUsers } from "../models/db-json";
 
+/*
+
 // Get user profile
 async function getUserProfile(req: Request, res: Response) {
   try {
@@ -11,17 +13,6 @@ async function getUserProfile(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(500).send("Could not get the profile.");
-  }
-}
-
-async function getUserProfiles (req: Request, res: Response) {
-  try {
-    const { userIds } = req.body;
-    const users = getUsers(userIds);
-    res.status(200).send(users);
-  } catch (error) {
-    console.error(error);
-    res.status(400).send("Could not get profile for provided user(s)");
   }
 }
 
@@ -48,10 +39,26 @@ async function getCoupleProfile(req: Request, res: Response) {
   }
 }
 
+*/
+
+//----------------------------------------------------------------
+// CONTROLLER FOR JSON SERVER
+//----------------------------------------------------------------
+
+
+async function getUserProfiles (req: Request, res: Response) {
+  try {
+    const { userIds } = req.body;
+    const users = getUsers(userIds);
+    res.status(200).send(users);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not get profile for provided user(s)");
+  }
+}
+
 const userController = {
-  getUserProfile,
   getUserProfiles,
-  getCoupleProfile,
 };
 
 export default userController;
