@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
-import { getTransactions } from '../models/db-json';
+import { getTransactions } from "../models/db-json";
 
 /*
 
@@ -96,7 +96,11 @@ async function deleteTransaction(req: Request, res: Response) {
 // CONTROLLERS FOR JSON SERVER
 //----------------------------------------------------------------
 
+<<<<<<< HEAD
+async function getTransactionsForUsers(req: Request, res: Response) {
+=======
 async function getTransactionsForUsers (req: Request, res: Response) {
+>>>>>>> main
   try {
     const { userIds, transactionsPerUser } = req.body;
 
@@ -108,9 +112,8 @@ async function getTransactionsForUsers (req: Request, res: Response) {
   }
 }
 
-
 const transactionController = {
   getTransactionsForUsers,
-}
+};
 
 export default transactionController;
