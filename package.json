@@ -7,7 +7,7 @@
     "test": "jest",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/app.ts",
     "start": "node build/app.js",
-    "postinstall": "tsc"
+    "postinstall": "tsc && cp src/models/mock-data.json build/models/mock-data.json"
   },
   "author": "Natalie Pilling, James Foxlee, David Longaron, Liam Morris",
   "repository": {
