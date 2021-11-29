@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
-// import db from '../models/db-json';
-// console.log(Object.keys(db).length);
+import { getTransactions } from '../models/db-json';
 
 // Get all transactions of the user
 // TODO: Modify controller
@@ -17,6 +16,18 @@ async function getAllUser(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(500).send("Could not get the list of transactions.");
+  }
+}
+
+async function getTransactionsForUsers (req: Request, res: Response) {
+  try {
+    const { userIds, transactionsPerUser } = req.body;
+
+    const transactions = getTransactions(userIds, transactionsPerUser);
+    res.status(200).send(transactions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Could not get transactions.");
   }
 }
 
@@ -80,6 +91,7 @@ async function deleteTransaction(req: Request, res: Response) {
 const transactionController = {
   getAllUser,
   getAllCouple,
+  getTransactionsForUsers,
   addTransaction,
   deleteTransaction,
 };
