@@ -8,6 +8,7 @@ const router = Router();
 
 // Get user profile
 router.get("/me", userController.getUserProfile);
+router.get("/user", userController.getUserProfiles);
 
 // Get couple profile (user profile and partner's profile)
 router.get("/couple", userController.getCoupleProfile);

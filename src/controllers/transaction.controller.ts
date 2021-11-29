@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
-// import db from '../models/db-json';
-// console.log(Object.keys(db).length);
+// import { SOME_METHOD } from '../models/db-json';
 
 // Get all transactions of the user
 // TODO: Modify controller
