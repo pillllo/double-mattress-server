@@ -1,4 +1,5 @@
 type Transaction = {
+  // Change string to integer to be in line with prisma
   transactionId: string;
   transactionType: "income" | "expense";
   userId: string;
