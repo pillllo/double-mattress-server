@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 
-import mockTransactions from "../models/mockTransactions";
-import mockUser from "../models/mockUser";
 import { getTransactions } from "../models/db-json";
 
 /*
@@ -96,7 +94,7 @@ async function deleteTransaction(req: Request, res: Response) {
 // CONTROLLERS FOR JSON SERVER
 //----------------------------------------------------------------
 
-async function getTransactionsForUsers (req: Request, res: Response) {
+async function getTransactionsForUsers(req: Request, res: Response) {
   try {
     const { userIds, transactionsPerUser } = req.body;
 
