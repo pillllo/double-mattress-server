@@ -3,11 +3,8 @@ import { Request, Response } from "express";
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
 import { getTransactions } from '../models/db-json';
-<<<<<<< HEAD
 
 /*
-=======
->>>>>>> main
 
 // Get all transactions of the user
 // TODO: Modify controller
@@ -114,6 +111,6 @@ async function getTransactionsForUsers (req: Request, res: Response) {
 
 const transactionController = {
   getTransactionsForUsers,
-}
+};
 
 export default transactionController;
