@@ -1,17 +1,16 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
-    "currency" TEXT,
+    "currency" TEXT DEFAULT E'EUR',
     "linkedUserId" TEXT[],
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
 CREATE TABLE "Transaction" (
-    "transactionId" SERIAL NOT NULL,
+    "transactionId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "transactionType" TEXT NOT NULL,
@@ -19,7 +18,7 @@ CREATE TABLE "Transaction" (
     "amount" INTEGER NOT NULL,
     "currency" TEXT NOT NULL DEFAULT E'EUR',
     "category" TEXT NOT NULL,
-    "date" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "description" VARCHAR(255) NOT NULL,
     "includeAvg" BOOLEAN NOT NULL DEFAULT true,
 
@@ -30,4 +29,4 @@ CREATE TABLE "Transaction" (
 CREATE UNIQUE INDEX "User_userId_key" ON "User"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Transaction_userId_key" ON "Transaction"("userId");
+CREATE UNIQUE INDEX "Transaction_transactionId_key" ON "Transaction"("transactionId");

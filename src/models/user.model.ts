@@ -1,42 +1,79 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "./db";
 import { v4 as uuid } from "uuid";
-const prisma = new PrismaClient();
 
-async function main() {
-  await prisma.transaction.create({
-    data: {
-      transactionId: uuid(),
-      transactionType: "expenses",
-      userId: "1",
-      amount: 10000,
-      currency: "EUR",
-      category: "rent",
-      date: "2021-11-29T17:54:33.422Z",
-      description: "Apartment",
-      includeAvg: true,
-    },
-  });
+import User from "../types/user";
+import { DeleteError } from "../types/errors";
 
-  const allUsers = await prisma.user.findMany();
-  console.dir(allUsers, { depth: null });
-
-  await prisma.user.create({
-    data: {
-      userId: uuid(),
-      firstName: "Natalie",
-      currency: "EUR",
-      linkedUserId: ["2"],
-    },
-  });
-
-  const allTransactions = await prisma.user.findMany();
-  console.dir(allTransactions, { depth: null });
+// getUserIds() is convenience for the front end devs to query
+// for userIds in case they can't remember / retrieve their test userId
+// returns all userIds in the database
+// TODO: remove model once login implemented
+async function getUserIds () {
+  try {
+    console.log("user.model.getUserIds()");
+    const allUsers = await prisma.user.findMany({ distinct: ['userId']});
+    return allUsers.map(user => user.userId);
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
 }
 
-main()
-  .catch((e) => {
-    throw e;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+async function getUsers (userIds: string[]) {
+  try {
+    console.log("user.model.getUsers() for userIds...");
+    console.log(userIds);
+    // const allUsers = await prisma.user.findMany(userIds);
+    // console.dir(allUsers, { depth: null });
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// TODO: implement proper createUser functionality
+async function createUser () {
+  try {
+    console.log("user.model.createUser()");
+    const result = await prisma.user.create({
+      data: {
+        userId: uuid(),
+        firstName: "James",
+        currency: "EUR",
+        linkedUserIds: ["RANDOM_USER"],
+      },
+    });
+    return result;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// TODO: implement proper createUser functionality
+async function updateUser () {
+  try {
+    console.log("user.model.updateUser()");
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// TODO: tried implementing proper return types but TS driving me up the wall
+async function deleteUser (userId: string) {
+  try {
+    const deletedUser = await prisma.user.delete({
+      where: {
+        userId: userId,
+      }
+    });
+    return deletedUser;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+export default {
+  getUserIds,
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+}
