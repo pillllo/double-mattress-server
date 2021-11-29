@@ -6,6 +6,7 @@ import mockUser from "../models/mockUser";
 // console.log(Object.keys(db).length);
 
 // Get all transactions of the user
+// TODO: Modify controller
 async function getAllUser(req: Request, res: Response) {
   try {
     const { userId } = req.body;
