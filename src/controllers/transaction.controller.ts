@@ -6,8 +6,6 @@ import { getTransactions } from "../models/db-json";
 
 /*
 
-/*
-
 // Get all transactions of the user
 // TODO: Modify controller
 async function getAllUser(req: Request, res: Response) {
