@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import mockTransactions from "../models/mockTransactions";
 import mockUser from "../models/mockUser";
-import { getTransactions } from '../models/db-json';
+import { getTransactions } from "../models/db-json";
 
 /*
 
@@ -107,7 +107,6 @@ async function getTransactionsForUsers (req: Request, res: Response) {
     res.status(500).send("Could not get transactions.");
   }
 }
-
 
 const transactionController = {
   getTransactionsForUsers,
