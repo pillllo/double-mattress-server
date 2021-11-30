@@ -22,6 +22,7 @@ router.delete("/user", userController.deleteUser);
 // TRANSACTIONS
 //----------------------------------------------------------------
 
-router.get("/transactions", transactionController.getTransactionsForUsers);
+router.get("/transactions", transactionController.getTransactions);
+router.post("/transactions", transactionController.createTransaction);
 
 export default router;
