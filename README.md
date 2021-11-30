@@ -43,7 +43,7 @@ Sample response:
 
 ## `GET /user`
 
-Get user profile data for a user and atheir linked users.
+Get user profile data for a user and their linked users.
 
 **Request body**
 
