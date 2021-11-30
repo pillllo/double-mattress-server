@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-  userId       String   @id @unique
-  firstName    String
-  currency     String?  @default("EUR")
-  linkedUserId String[]
+  userId          String      @id @unique
+  firstName       String
+  currency        String?     @default("EUR")
+  linkedUserIds   String[]
 }
 
 model Transaction {
-  transactionId   String   @id @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  transactionId   String      @id @unique
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   transactionType String
   userId          String
   amount          Int
-  currency        String   @default("EUR")
+  currency        String      @default("EUR")
   category        String
   date            DateTime
-  description     String   @db.VarChar(255)
-  includeAvg      Boolean  @default(true)
+  description     String      @db.VarChar(255)
+  includeAvg      Boolean     @default(true)
 }
