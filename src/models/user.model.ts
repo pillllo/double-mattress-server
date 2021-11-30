@@ -63,7 +63,7 @@ async function createUser () {
   }
 }
 
-// TODO: implement proper createUser functionality
+// TODO: implement proper updateUser functionality
 async function updateUser () {
   try {
     console.log("user.model.updateUser()");
@@ -75,12 +75,21 @@ async function updateUser () {
 // TODO: tried implementing proper return types but TS driving me up the wall
 async function deleteUser (userId: string) {
   try {
-    const deletedUser = await prisma.user.delete({
+    const user = await prisma.user.findUnique({
       where: {
         userId: userId,
       }
-    });
-    return deletedUser;
+    })
+    if (user) {
+      await prisma.user.delete({
+        where: {
+          userId: userId,
+        }
+      });
+      return user;
+    } else {
+      throw new Error('user not found');
+    }
   } catch (err) {
     console.error("ERROR: ", err);
   }

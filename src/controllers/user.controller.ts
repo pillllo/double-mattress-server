@@ -59,12 +59,9 @@ async function deleteUser (req: Request, res: Response) {
     if (typeof userId !== "string") throw new Error("invalid userId");
     console.log("user.controller.deleteUser() for userId: ", userId);
     const result = await userModel.deleteUser(userId);
-    // TODO: TS driving me insane, trying to catch the error to return sensible
-    // info to client but....just, argh.
-    // if (result && result.code && result.clientVersion) {
-    //   // it's a DeleteError
-    //   throw new Error("user not found");
-    // }
+    if (!result) {
+      throw new Error("user not found");
+    }
     res.status(200).send(result);
   } catch (err) {
     console.error("ERROR: ", err);
