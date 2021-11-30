@@ -2,13 +2,13 @@ import prisma from "./db";
 import { v4 as uuid } from "uuid";
 
 import User from "../types/user";
-import { DeleteError } from "../types/errors";
+import { NewUserRequest } from "../types/requests";
 
 // getUserIds() is convenience for the front end devs to query
 // for userIds in case they can't remember / retrieve their test userId
 // returns all userIds in the database
 // TODO: remove model once login implemented
-async function getUserIds() {
+async function getUserIds(): Promise<string[] | undefined> {
   try {
     console.log("user.model.getUserIds()");
     const allUsers = await prisma.user.findMany({ distinct: ["userId"] });
@@ -47,16 +47,14 @@ async function getUsers(userId: string) {
   return results;
 }
 
-// TODO: implement proper createUser functionality
-async function createUser() {
+async function createUser(userData: NewUserRequest) {
   try {
     console.log("user.model.createUser()");
+    console.log(userData);
     const result = await prisma.user.create({
       data: {
+        ...userData,
         userId: uuid(),
-        firstName: "James",
-        currency: "EUR",
-        linkedUserIds: ["RANDOM_USER"],
       },
     });
     return result;
