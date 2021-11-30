@@ -21,10 +21,9 @@ async function getUserIds(req: Request, res: Response) {
 
 async function getUsers(req: Request, res: Response) {
   try {
-    console.log("user.controller.getUsers()");
-    const { userIds } = req.body;
-    console.log(userIds);
-    const users = await userModel.getUsers(userIds);
+    const { userId } = req.body;
+    console.log("user.controller.getUsers() for userId: ", userId);
+    const users = await userModel.getUsers(userId);
     res.status(200).send(users);
   } catch (err) {
     console.error(err);

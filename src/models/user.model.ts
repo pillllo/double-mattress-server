@@ -18,12 +18,28 @@ async function getUserIds () {
   }
 }
 
-async function getUsers (userIds: string[]) {
+async function getUsers (userId: string) {
   try {
-    console.log("user.model.getUsers() for userIds...");
-    console.log(userIds);
-    // const allUsers = await prisma.user.findMany(userIds);
-    // console.dir(allUsers, { depth: null });
+    console.log("user.model.getUsers()");
+    let results: User[] = [];
+    const user = await prisma.user.findUnique({
+      where: {
+        userId: userId
+      }
+    });
+    user && results.push(user);
+    let linkedUsers: User[] = [];
+    if (user?.linkedUserIds) {
+      linkedUsers = await prisma.user.findMany({
+        where: {
+          userId: {
+            in: user.linkedUserIds
+          }
+        }
+      });
+    }
+    results = results.concat(linkedUsers);
+    return results;
   } catch (err) {
     console.error("ERROR: ", err);
   }

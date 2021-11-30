@@ -10,7 +10,7 @@ datasource db {
 model User {
   userId          String      @id @unique
   firstName       String
-  currency        String?     @default("EUR")
+  currency        String      @default("EUR")
   linkedUserIds   String[]
 }
 
