@@ -7,7 +7,7 @@ async function main() {
     data: {
       transactionId: uuid(),
       transactionType: "expenses",
-      userId: "869c1acc-c4e1-40fb-9ccc-87dd3c13d71a",
+      userId: "6531a001-694a-4eff-ab4f-2e9b8f2737fc",
       amount: 10000,
       currency: "EUR",
       category: "rent",
