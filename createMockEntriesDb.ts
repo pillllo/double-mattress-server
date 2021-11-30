@@ -7,12 +7,12 @@ async function main() {
     data: {
       transactionId: uuid(),
       transactionType: "expenses",
-      userId: "1",
+      userId: "869c1acc-c4e1-40fb-9ccc-87dd3c13d71a",
       amount: 10000,
       currency: "EUR",
       category: "rent",
       date: "2021-11-29T17:54:33.422Z",
-      description: "Apartment",
+      description: "House",
       includeAvg: true,
     },
   });

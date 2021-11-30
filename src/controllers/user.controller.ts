@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 // import { getUsers as getUsersFromJsonDB } from "../models/db-json";
-import userModel from "../models/user.model";
+import UserModel from "../models/user.model";
 
 import { DeleteError } from "../types/errors";
 
@@ -11,7 +11,7 @@ import { DeleteError } from "../types/errors";
 async function getUserIds(req: Request, res: Response) {
   try {
     console.log("user.controller.getUserIds()");
-    const userIds = await userModel.getUserIds();
+    const userIds = await UserModel.getUserIds();
     res.status(200).send(userIds);
   } catch (err) {
     console.error(err);
@@ -23,7 +23,7 @@ async function getUsers(req: Request, res: Response) {
   try {
     const { userId } = req.body;
     console.log("user.controller.getUsers() for userId: ", userId);
-    const users = await userModel.getUsers(userId);
+    const users = await UserModel.getUsers(userId);
     res.status(200).send(users);
   } catch (err) {
     console.error(err);
@@ -34,7 +34,7 @@ async function getUsers(req: Request, res: Response) {
 async function createUser (req: Request, res: Response) {
   try {
     console.log("user.controller.createUser()");
-    const newUser = await userModel.createUser();
+    const newUser = await UserModel.createUser();
     res.status(200).send(newUser);
   } catch (err) {
     console.error(err);
@@ -58,7 +58,7 @@ async function deleteUser (req: Request, res: Response) {
     const { userId } = req.body;
     if (typeof userId !== "string") throw new Error("invalid userId");
     console.log("user.controller.deleteUser() for userId: ", userId);
-    const result = await userModel.deleteUser(userId);
+    const result = await UserModel.deleteUser(userId);
     if (!result) {
       throw new Error("user not found");
     }
