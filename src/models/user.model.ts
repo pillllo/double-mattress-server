@@ -19,14 +19,16 @@ async function getUserIds () {
 }
 
 async function getUsers (userId: string) {
+  let results: User[] = [];
   try {
     console.log("user.model.getUsers()");
-    let results: User[] = [];
+
     const user = await prisma.user.findUnique({
       where: {
         userId: userId
       }
     });
+    if (!user) throw new Error(`no user profile found for userId: ${userId}`);
     user && results.push(user);
     let linkedUsers: User[] = [];
     if (user?.linkedUserIds) {
@@ -39,10 +41,10 @@ async function getUsers (userId: string) {
       });
     }
     results = results.concat(linkedUsers);
-    return results;
   } catch (err) {
     console.error("ERROR: ", err);
   }
+  return results;
 }
 
 // TODO: implement proper createUser functionality

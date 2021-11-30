@@ -6,18 +6,25 @@ async function getTransactions(req: Request, res: Response) {
   try {
     const { userId, transactionsPerUser } = req.body;
     const transactions = await TransactionModel.getTransactions(userId, transactionsPerUser);
-    console.log('transaction controller transaction:', transactions)
+    console.log("transaction controller transaction:", transactions)
     res.status(200).send(transactions);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Could not get transactions.");
+    res.status(400).send("Could not get transactions");
   }
 }
 
 async function createTransaction (req: Request, res: Response) {
-  const tData = req.body;
-  const result = TransactionModel.createTransaction(tData);
-
+  try {
+    console.log('transaction.controller.createTransaction()');
+    const tData = req.body;
+    console.log(tData);
+    const result = await TransactionModel.createTransaction(tData);
+    if (!result) throw new Error();
+    res.status(200).send(`Transaction created with transactionId: ${result.transactionId}`);
+  } catch (err) {
+    res.status(500).send("Could not create transaction");
+  }
 }
 
 const transactionController = {
