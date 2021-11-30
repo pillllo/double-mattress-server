@@ -18,15 +18,33 @@ async function getUserIds () {
   }
 }
 
-async function getUsers (userIds: string[]) {
+async function getUsers (userId: string) {
+  let results: User[] = [];
   try {
-    console.log("user.model.getUsers() for userIds...");
-    console.log(userIds);
-    // const allUsers = await prisma.user.findMany(userIds);
-    // console.dir(allUsers, { depth: null });
+    console.log("user.model.getUsers()");
+
+    const user = await prisma.user.findUnique({
+      where: {
+        userId: userId
+      }
+    });
+    if (!user) throw new Error(`no user profile found for userId: ${userId}`);
+    user && results.push(user);
+    let linkedUsers: User[] = [];
+    if (user?.linkedUserIds) {
+      linkedUsers = await prisma.user.findMany({
+        where: {
+          userId: {
+            in: user.linkedUserIds
+          }
+        }
+      });
+    }
+    results = results.concat(linkedUsers);
   } catch (err) {
     console.error("ERROR: ", err);
   }
+  return results;
 }
 
 // TODO: implement proper createUser functionality
@@ -47,7 +65,7 @@ async function createUser () {
   }
 }
 
-// TODO: implement proper createUser functionality
+// TODO: implement proper updateUser functionality
 async function updateUser () {
   try {
     console.log("user.model.updateUser()");
@@ -59,12 +77,21 @@ async function updateUser () {
 // TODO: tried implementing proper return types but TS driving me up the wall
 async function deleteUser (userId: string) {
   try {
-    const deletedUser = await prisma.user.delete({
+    const user = await prisma.user.findUnique({
       where: {
         userId: userId,
       }
-    });
-    return deletedUser;
+    })
+    if (user) {
+      await prisma.user.delete({
+        where: {
+          userId: userId,
+        }
+      });
+      return user;
+    } else {
+      throw new Error('user not found');
+    }
   } catch (err) {
     console.error("ERROR: ", err);
   }

@@ -150,7 +150,7 @@ output.users.forEach((user) => {
       transactionId: uuid(),
       transactionType: category === CATEGORIES.income ? "income" : "expense",
       userId,
-      userName: firstName,
+      firstName,
       amount: amount * 100 + random(0, 99),
       currency: "EUR",
       category,

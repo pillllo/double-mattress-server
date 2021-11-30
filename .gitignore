@@ -22,3 +22,4 @@ yarn-error.log*
 
 # server-specific files
 scripts/output
+prisma/migrations
