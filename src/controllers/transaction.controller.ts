@@ -5,8 +5,10 @@ import TransactionModel from "../models/transaction.model";
 async function getTransactions(req: Request, res: Response) {
   try {
     const { userId, transactionsPerUser } = req.body;
-    const transactions = await TransactionModel.getTransactions(userId, transactionsPerUser);
-    console.log("transaction controller transaction:", transactions)
+    const transactions = await TransactionModel.getTransactions(
+      userId,
+      transactionsPerUser
+    );
     res.status(200).send(transactions);
   } catch (error) {
     console.error(error);
@@ -14,14 +16,19 @@ async function getTransactions(req: Request, res: Response) {
   }
 }
 
-async function createTransaction (req: Request, res: Response) {
+async function createTransaction(req: Request, res: Response) {
   try {
-    console.log('transaction.controller.createTransaction()');
-    const tData = req.body;
-    console.log(tData);
-    const result = await TransactionModel.createTransaction(tData);
+    console.log("transaction.controller.createTransaction()");
+    const transactionData = req.body;
+    console.log(transactionData);
+    // Result = transaction including transactionId created in the model
+    const result = await TransactionModel.createTransaction(transactionData);
+    console.log(result);
     if (!result) throw new Error();
-    res.status(200).send(`Transaction created with transactionId: ${result.transactionId}`);
+    res
+      .status(200)
+      // Send back whole transaction incl. transactionId so that client knows the transaction's id
+      .send(result);
   } catch (err) {
     res.status(500).send("Could not create transaction");
   }

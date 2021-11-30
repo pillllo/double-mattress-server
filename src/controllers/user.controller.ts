@@ -31,7 +31,7 @@ async function getUsers(req: Request, res: Response) {
   }
 }
 
-async function createUser (req: Request, res: Response) {
+async function createUser(req: Request, res: Response) {
   try {
     console.log("user.controller.createUser()");
     const newUser = await UserModel.createUser();
@@ -43,7 +43,7 @@ async function createUser (req: Request, res: Response) {
 }
 
 // TODO: implement user update
-async function updateUser (req: Request, res: Response) {
+async function updateUser(req: Request, res: Response) {
   try {
     console.log("user.controller.updateUser()");
     res.status(401).send("Not implemented");
@@ -53,7 +53,7 @@ async function updateUser (req: Request, res: Response) {
   }
 }
 
-async function deleteUser (req: Request, res: Response) {
+async function deleteUser(req: Request, res: Response) {
   try {
     const { userId } = req.body;
     if (typeof userId !== "string") throw new Error("invalid userId");
