@@ -7,7 +7,6 @@ A responsive web app / PWA that helps couples visualise and forecast combined fi
 - David Longaron
 - Liam Morris
 
-
 # Project structure
 
 - `/src`: TypeScript source files
@@ -48,6 +47,8 @@ Get user profile data for a user and their linked users.
 **Request body**
 
 In the request body send an array for all the userIds you wish to get user profile data for (for a single user, send an array with a single user ID).
+
+Sample request:
 
 ```
 {
@@ -99,6 +100,8 @@ Sample response:
 
 In the request body send an object with `userId` property matching the user you wish to delete.
 
+Sample request:
+
 ```
 {
   "userId": "c4f2af8d-d47c-48ab-95f1-20f0a2f54a93"
@@ -137,15 +140,15 @@ Returns an array of type `Transaction`, with each having the following propertie
 
 ```
 {
-  "transactionId": string
-  "transactionType": string // "income" | "expense"
-  "userId": string
-  "userName": string
-  "amount": integer // e.g. 1 EUR -> 100
-  "currency": string
-  "category": string
-  "date": string // as ISO 8601 string*
-  "description": string
+  "transactionId":    string
+  "transactionType":  string // "income" | "expense"
+  "userId":           string
+  "amount":           integer // e.g. 1 EUR -> 100
+  "currency":         string
+  "category":         string
+  "date":             string // as ISO 8601 string*
+  "description":      string
+  "includeAvg":       boolean // optional
 }
 ```
 
@@ -177,4 +180,76 @@ Sample response:
   },
   ...
 ]
+```
+
+# Create transaction for a user
+
+## `PUT /transactions`
+
+Create a transaction for a given user.
+
+**Request body**
+
+In the request body send an object with the following properties. Note the `transactionId` is created by the server.
+
+```
+{
+  "transactionType":  string // "income" | "expense"
+  "userId":           string
+  "amount":           integer // e.g. 1 EUR -> 100
+  "currency":         string
+  "category":         string
+  "date":             string // as ISO 8601 string*
+  "description":      string
+  "includeAvg":       boolean // optional
+}
+```
+
+Sample request:
+
+```
+{
+  "transactionType": "expense",
+  "userId": "869c1acc-c4e1-40fb-9ccc-87dd3c13d71a",
+  "amount": 11111,
+  "currency": "EUR",
+  "category": "Shopping",
+  "date": "2021-11-11T11:11:11.111Z",
+  "description": "glue"
+  "includeAvg": "true"
+}
+```
+
+**Response body**
+
+Returns an array of type `Transaction`, with each having the following properties:
+
+```
+{
+  "transactionId":    string // GUID generated in the backend
+  "transactionType":  string // "income" | "expense"
+  "userId":           string
+  "amount":           integer // e.g. 1 EUR -> 100
+  "currency":         string
+  "category":         string
+  "date":             string // as ISO 8601 string*
+  "description":      string
+  "includeAvg":       boolean // optional, default true
+}
+```
+
+Sample response:
+
+```
+{
+  "transactionId": "d3e27df9-f87d-40f9-a95a-c1635b0638bd",
+  "transactionType": "expense",
+  "userId": "c4f2af8d-d47c-48ab-95f1-20f0a2f54a93",
+  "userName": "Annie",
+  "amount": 11687,
+  "currency": "EUR",
+  "category": "Home",
+  "date": "2021-12-01T00:00:00.000Z",
+  "description": "Wallpaper"
+}
 ```
