@@ -7,35 +7,33 @@ import User from "../types/user";
 import Category from "../types/category";
 import { TransactionSuccess } from "../types/successes";
 
-
-async function getTransactions (userId: string, transactionsPerUser: number) {
+async function getTransactions(userId: string, transactionsPerUser: number) {
   try {
     console.log("transaction.model.getTransactions()");
     const allUsers = await UserModel.getUsers(userId);
-    const allUserIds = allUsers?.map(user => user.userId);
+    const allUserIds = allUsers?.map((user) => user.userId);
     const results = await prisma.transaction.findMany({
       where: {
         userId: {
-          in: allUserIds
-        }
-      }
-    })
+          in: allUserIds,
+        },
+      },
+    });
     return results;
   } catch (err) {
     console.error("ERROR: ", err);
   }
 }
 
-async function createTransaction (
-  tData: any
-): Promise<TransactionSuccess| null> {
-
+async function createTransaction(
+  transactionData: any
+): Promise<TransactionSuccess | null> {
   // here for reference
   type TRANSACTION_TYPE = {
     transactionId: string;
     transactionType: "income" | "expense";
     userId: string;
-    firstName: string,
+    firstName: string;
     amount: number;
     currency: string;
     category: Category;
@@ -44,24 +42,24 @@ async function createTransaction (
     includeAvg?: boolean;
   };
 
-  console.log('transaction.model.createTransaction()');
+  console.log("transaction.model.createTransaction()");
   try {
-    const t = { ...tData, transactionId: uuid() };
+    const transaction = { ...transactionData, transactionId: uuid() };
     const result = await prisma.transaction.create({
-      data: t,
+      data: transaction,
       select: {
         transactionId: true,
-      }
+      },
     });
-    return result;
+    // Send back whole transaction incl. transactionId so that client knows the transaction's id
+    return transaction;
   } catch (err) {
     console.error("ERROR: ", err);
     return null;
   }
 }
 
-
 export default {
   getTransactions,
   createTransaction,
-}
+};
