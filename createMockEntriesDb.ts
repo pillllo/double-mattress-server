@@ -25,7 +25,7 @@ async function main() {
       userId: uuid(),
       firstName: "Natalie",
       currency: "EUR",
-      linkedUserIds: ["fd7f0cc5-fe1d-4c4c-aa37-496542b1159c"],
+      linkedUserIds: ["2"],
     },
   });
 
