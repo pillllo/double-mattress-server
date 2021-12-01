@@ -1,6 +1,7 @@
 import { Router } from "express";
 import transactionController from "./controllers/transaction.controller";
 import userController from "./controllers/user.controller";
+import projectionController from "./controllers/projection.controller";
 
 const router = Router();
 
@@ -24,5 +25,7 @@ router.delete("/users", userController.deleteUser);
 
 router.get("/transactions", transactionController.getTransactions);
 router.post("/transactions", transactionController.createTransaction);
+
+router.get("/projections", projectionController.getProjections);
 
 export default router;
