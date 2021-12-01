@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 // import { getUsers as getUsersFromJsonDB } from "../models/db-json";
 import UserModel from "../models/user.model";
-import UserId from "../types/id";
 
 // getUserIds() is convenience for the front end devs to query
 // for userIds in case they can"t remember / retrieve their test userId
