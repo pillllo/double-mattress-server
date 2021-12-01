@@ -14,9 +14,9 @@ const router = Router();
 // TODO: remove route once login implemented
 router.get("/userIds", userController.getUserIds);
 
-router.get("/user", userController.getUsers);
-router.post("/user", userController.createUser);
-router.delete("/user", userController.deleteUser);
+router.get("/users", userController.getUsers);
+router.post("/users", userController.createUser);
+router.delete("/users", userController.deleteUser);
 
 //----------------------------------------------------------------
 // TRANSACTIONS

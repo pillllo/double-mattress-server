@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import TransactionModel from "../models/transaction.model";
+import Transaction from "../types/transaction";
 
 async function getTransactions(req: Request, res: Response) {
   try {

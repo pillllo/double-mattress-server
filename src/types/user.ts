@@ -1,5 +1,7 @@
+import { UserId } from "./id";
+
 type User = {
-  userId: string;
+  userId: UserId;
   firstName: string;
   currency: string;
   linkedUserIds: string[];
