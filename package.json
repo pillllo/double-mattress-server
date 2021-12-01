@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "jest",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only src/app.ts",
+    "dev": "ts-node-dev --respawn --pretty --transpile-only --exit-child src/app.ts",
     "start": "node build/app.js",
-    "postinstall": "tsc && cp src/models/mock-data.json build/models/mock-data.json"
+    "postinstall": "tsc"
   },
   "author": "Natalie Pilling, James Foxlee, David Longaron, Liam Morris",
   "repository": {
@@ -19,23 +19,26 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^3.5.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "nodemon": "^2.0.15",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
-    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^16.11.10",
-    "ts-node-dev": "^1.1.8",
-    "typescript": "^4.5.2",
+    "@types/uuid": "^8.3.3",
+    "axios": "^0.24.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "nodemon": "^2.0.15",
     "prettier": "^2.5.0",
-    "cz-conventional-changelog": "^3.3.0"
+    "prisma": "^3.6.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.2"
   },
-   "config": {
+  "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }

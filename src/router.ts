@@ -4,29 +4,25 @@ import userController from "./controllers/user.controller";
 
 const router = Router();
 
+//----------------------------------------------------------------
 // USER
+//----------------------------------------------------------------
 
-// Get user profile
-// router.get("/me", userController.getUserProfile);
-router.get("/user", userController.getUserProfiles);
+// getUserIds() is convenience for the front end devs to query
+// for userIds in case they can't remember / retrieve their test userId
+// returns all userIds in the database
+// TODO: remove route once login implemented
+router.get("/userIds", userController.getUserIds);
 
-// Get couple profile (user profile and partner's profile)
-// router.get("/couple", userController.getCoupleProfile);
+router.get("/users", userController.getUsers);
+router.post("/users", userController.createUser);
+router.delete("/users", userController.deleteUser);
 
+//----------------------------------------------------------------
 // TRANSACTIONS
+//----------------------------------------------------------------
 
-router.get("/transactions", transactionController.getTransactionsForUsers);
-
-// Get all transactions of the user
-// router.get("/transactions/me", transactionController.getAllUser);
-
-// Get all transactions of the couple (user and the partner)
-// router.get("/transactions/couple", transactionController.getAllCouple);
-
-// Add a transaction
-// router.post("/transactions", transactionController.addTransaction);
-
-// Remove a transaction
-// router.delete("/transactions/:id", transactionController.deleteTransaction);
+router.get("/transactions", transactionController.getTransactions);
+router.post("/transactions", transactionController.createTransaction);
 
 export default router;
