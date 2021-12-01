@@ -21,8 +21,7 @@ async function getUserIds(): Promise<string[] | undefined> {
 async function getUsers(userId: string) {
   let results: User[] = [];
   try {
-    console.log("user.model.getUsers()");
-
+    console.log("user.model.getUsers() for userId: ", userId);
     const user = await prisma.user.findUnique({
       where: {
         userId: userId,

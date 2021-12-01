@@ -21,5 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # server-specific files
+.secret*
+*.postman_collection.json
 scripts/output
 prisma/migrations

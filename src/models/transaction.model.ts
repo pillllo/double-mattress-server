@@ -4,7 +4,11 @@ import { v4 as uuid } from "uuid";
 import UserModel from "../models/user.model";
 import Transaction from "../types/transaction";
 
-async function getTransactions(userId: string, transactionsPerUser: number) {
+// TODO: limit number of transactions
+async function getTransactions(
+  userId: string,
+  transactionsPerUser: number = 100
+) {
   try {
     console.log("transaction.model.getTransactions()");
     const allUsers = await UserModel.getUsers(userId);
@@ -16,6 +20,7 @@ async function getTransactions(userId: string, transactionsPerUser: number) {
         },
       },
     });
+    console.log(`Found ${results.length} records`);
     return results;
   } catch (err) {
     console.error("ERROR: ", err);
