@@ -16,6 +16,16 @@ const corsConfig = {
 
 app.use(cors(corsConfig));
 app.use(express.json());
+// "security"
+app.use((req, res, next) => {
+  const jwt = req.headers["client-jwt"];
+  if (jwt !== process.env.CLIENT_JWT) {
+    console.log("auth failed");
+    res.status(404);
+  } else {
+    next();
+  }
+});
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`${req.method} request received for url: ${req.url}`);
