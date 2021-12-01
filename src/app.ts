@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   const jwt = req.headers["client-jwt"];
   if (jwt !== process.env.CLIENT_JWT) {
     console.log("auth failed");
-    res.status(404);
+    res.status(404).send();
   } else {
     next();
   }
