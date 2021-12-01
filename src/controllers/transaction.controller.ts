@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import TransactionModel from "../models/transaction.model";
-import Transaction from "../types/transaction";
 
 async function getTransactions(req: Request, res: Response) {
   try {
@@ -21,15 +20,12 @@ async function createTransaction(req: Request, res: Response) {
   try {
     console.log("transaction.controller.createTransaction()");
     const transactionData = req.body;
-    console.log(transactionData);
     // Result = transaction including transactionId created in the model
     const result = await TransactionModel.createTransaction(transactionData);
     console.log(result);
     if (!result) throw new Error();
-    res
-      .status(200)
-      // Send back whole transaction incl. transactionId so that client knows the transaction's id
-      .send(result);
+    // Send back whole transaction incl. transactionId so that client knows the transaction's id
+    res.status(200).send(result);
   } catch (err) {
     res.status(500).send("Could not create transaction");
   }
