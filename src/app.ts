@@ -20,7 +20,7 @@ app.use(express.json());
 app.use((req, res, next) => {
   const jwt = req.headers["client-jwt"];
   if (jwt !== process.env.CLIENT_JWT) {
-    console.log("auth failed");
+    console.log("Auth failed");
     res.status(404).send();
   } else {
     next();
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 });
 app.use(router);
 app.get("*", (req, res) => {
-  res.status(404).send("Sorry, this page could not be found.");
+  res.status(404).send();
 });
 
 (async function () {

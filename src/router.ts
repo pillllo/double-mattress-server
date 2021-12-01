@@ -1,7 +1,8 @@
 import { Router } from "express";
-import transactionController from "./controllers/transaction.controller";
 import userController from "./controllers/user.controller";
+import transactionController from "./controllers/transaction.controller";
 import projectionController from "./controllers/projection.controller";
+import dashboardController from "./controllers/dashboard.controller";
 
 const router = Router();
 
@@ -15,19 +16,25 @@ const router = Router();
 // TODO: remove route once login implemented
 router.get("/userIds", userController.getAllUserIds);
 
-router.get("/users", userController.getUsers);
-router.post("/users", userController.createUser);
-router.delete("/users", userController.deleteUser);
+router.post("/users", userController.getUsers);
+router.post("/users/create", userController.createUser);
+router.post("/users/delete", userController.deleteUser);
 
 //----------------------------------------------------------------
 // TRANSACTIONS
 //----------------------------------------------------------------
 
-router.get("/transactions", transactionController.getTransactions);
-router.post("/transactions", transactionController.createTransaction);
+router.post("/transactions", transactionController.getTransactions);
+router.post("/transactions/create", transactionController.createTransaction);
 
 //----------------------------------------------------------------
-// TRANSACTIONS
+// DASHBOARD
+//----------------------------------------------------------------
+
+router.post("/dashboard", dashboardController.getDashboard);
+
+//----------------------------------------------------------------
+// PROJECTIONS
 //----------------------------------------------------------------
 
 router.get("/projections", projectionController.getProjections);
