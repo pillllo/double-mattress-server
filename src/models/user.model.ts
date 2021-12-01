@@ -8,11 +8,26 @@ import { NewUserRequest } from "../types/requests";
 // for userIds in case they can't remember / retrieve their test userId
 // returns all userIds in the database
 // TODO: remove model once login implemented
-async function getUserIds(): Promise<string[] | undefined> {
+async function getAllUserIds(): Promise<string[] | undefined> {
   try {
     console.log("user.model.getUserIds()");
     const allUsers = await prisma.user.findMany({ distinct: ["userId"] });
     return allUsers.map((user) => user.userId);
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+async function checkIfUserExists(userId: string) {
+  try {
+    console.log("user.model.checkIfUserExists() for userId: ", userId);
+    const user = await prisma.user.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+    if (user) return true;
+    else return false;
   } catch (err) {
     console.error("ERROR: ", err);
   }
@@ -95,7 +110,8 @@ async function deleteUser(userId: string) {
 }
 
 export default {
-  getUserIds,
+  getAllUserIds,
+  checkIfUserExists,
   getUsers,
   createUser,
   updateUser,
