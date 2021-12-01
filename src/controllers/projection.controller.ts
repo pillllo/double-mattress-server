@@ -5,10 +5,12 @@ import UserModel from "../models/user.model";
 async function getProjections(req: Request, res: Response) {
   try {
     const { userId, date } = req.body;
+    // Checks if user exists
     const userExists = await UserModel.checkIfUserExists(userId);
     if (userExists) {
+      // Assumes that client always sends date as first day of the queried month
       const dateRange = setDateRange(date);
-      // TODO: create helperfunction that a) checks if user exists, b) gets allUserIds
+      // TODO: create helperfunction that gets allUserIds
       const incomeAvg = await ProjectionModel.getAverageByType(
         userId,
         "income",
@@ -22,7 +24,6 @@ async function getProjections(req: Request, res: Response) {
       console.log(`${incomeAvg}, ${expensesAvg}`);
       res.status(200).send({ incomeAvg, expensesAvg });
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
-    // Assumes that client always sends date as first day of the queried month
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not get projections");
