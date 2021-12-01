@@ -6,11 +6,10 @@ async function getProjections(req: Request, res: Response) {
   try {
     const { userId, date } = req.body;
     // Checks if user exists
-    const userExists = await UserModel.checkIfUserExists(userId);
-    if (userExists) {
+    const user = await UserModel.getUser(userId);
+    if (user) {
       // Assumes that client always sends date as first day of the queried month
       const dateRange = setDateRange(date);
-      // TODO: create helperfunction that gets allUserIds
       const incomeAvg = await ProjectionModel.getAverageByType(
         userId,
         "income",

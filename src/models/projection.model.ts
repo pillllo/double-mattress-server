@@ -1,5 +1,6 @@
 import prisma from "./db";
-import UserModel from "../models/user.model";
+import { UserId } from "../types/id";
+import UserModel from "./user.model";
 
 type DateRange = {
   startDate: string;
@@ -7,20 +8,12 @@ type DateRange = {
 };
 
 async function getAverageByType(
-  userId: string,
+  userId: UserId,
   transactionType: string,
   dateRange: DateRange
 ) {
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        userId: userId,
-      },
-    });
-    if (!user) throw new Error(`No user profile found for userId: ${userId}`);
-    const allUsers = await UserModel.getUsers(userId);
-    const allUserIds = allUsers?.map((user) => user.userId);
-
+    const userIds = await UserModel.getUserIds(userId);
     // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
     const aggregations = await prisma.transaction.aggregate({
       _avg: {
@@ -28,7 +21,7 @@ async function getAverageByType(
       },
       where: {
         userId: {
-          in: allUserIds,
+          in: userIds,
         },
         transactionType: {
           equals: transactionType,

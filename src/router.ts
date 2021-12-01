@@ -26,7 +26,10 @@ router.delete("/users", userController.deleteUser);
 router.get("/transactions", transactionController.getTransactions);
 router.post("/transactions", transactionController.createTransaction);
 
-// send body with date
+//----------------------------------------------------------------
+// TRANSACTIONS
+//----------------------------------------------------------------
+
 router.get("/projections", projectionController.getProjections);
 
 export default router;
