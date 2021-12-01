@@ -40,7 +40,7 @@ Sample response:
 
 # Get user profile data
 
-## `GET /user`
+## `GET /users`
 
 Get user profile data for a user and their linked users.
 
@@ -92,9 +92,32 @@ Sample response:
 ]
 ```
 
+# Create a user
+
+## `POST /users`
+
+**Request body**
+
+In the request body send an object with `firstName`property and an array of any `linkedUserIds`.
+
+Sample request:
+
+```
+{
+  "userId": "c4f2af8d-d47c-48ab-95f1-20f0a2f54a93"
+  "linkedUserIds": [
+    "LINKED_USER_ID"
+  ]
+}
+```
+
+**Response body**
+
+Returns the newly created `User`.
+
 # Delete a user
 
-## `DELETE /user`
+## `DELETE /users`
 
 **Request body**
 
