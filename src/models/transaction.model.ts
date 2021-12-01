@@ -3,9 +3,6 @@ import { v4 as uuid } from "uuid";
 
 import UserModel from "../models/user.model";
 import Transaction from "../types/transaction";
-import User from "../types/user";
-import Category from "../types/category";
-import { TransactionSuccess } from "../types/successes";
 
 async function getTransactions(userId: string, transactionsPerUser: number) {
   try {
@@ -27,21 +24,7 @@ async function getTransactions(userId: string, transactionsPerUser: number) {
 
 async function createTransaction(
   transactionData: any
-): Promise<TransactionSuccess | null> {
-  // here for reference
-  type TRANSACTION_TYPE = {
-    transactionId: string;
-    transactionType: "income" | "expense";
-    userId: string;
-    firstName: string;
-    amount: number;
-    currency: string;
-    category: Category;
-    date: string; // using ISO strings vs integer as they are human readable
-    description: string;
-    includeAvg?: boolean;
-  };
-
+): Promise<Transaction | null> {
   console.log("transaction.model.createTransaction()");
   try {
     const transaction = { ...transactionData, transactionId: uuid() };

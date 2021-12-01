@@ -1,11 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const { v4: uuid } = require("uuid");
+import fs from "fs";
+import path from "path";
+import { v4 as uuid } from "uuid";
 
-const {
-  getRandomNumber: random,
-  getDaysInMonth,
-} = require("../src/helpers/helpers");
+import { getRandomNumber as random, getDaysInMonth } from "./helpers";
 
 const FS_OPTS = { encoding: "utf-8" };
 const OUTPUT_PATH = path.join(__dirname, "output");
@@ -29,6 +26,7 @@ const MONTHS_TO_GENERATE = 4;
 
 function createUser(name, currency = "EUR") {
   const user = {
+    // remove
     userId: uuid(),
     firstName: name,
     currency,
@@ -102,7 +100,13 @@ function getRandomDescription(category) {
       ];
       break;
     case "Others":
-      options = ["Screwdriver", "New cat", "Dog food", "Pencil", "Batteries"];
+      options = [
+        "Screwdriver",
+        "New cat",
+        "Dog food",
+        "Bendy pencil",
+        "Car battery",
+      ];
       break;
   }
 
@@ -147,9 +151,11 @@ output.users.forEach((user) => {
   // function declared here to make use of user data in closure
   const createTransaction = (day, month, amount, category, description) => {
     return {
+      // wouldn't need this
       transactionId: uuid(),
       transactionType: category === CATEGORIES.income ? "income" : "expense",
       userId,
+      // remove
       firstName,
       amount: amount * 100 + random(0, 99),
       currency: "EUR",
