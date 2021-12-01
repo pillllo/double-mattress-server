@@ -8,7 +8,7 @@ import { NewUserRequest } from "../types/requests";
 // for userIds in case they can't remember / retrieve their test userId
 // returns all userIds in the database
 // TODO: remove model once login implemented
-async function getUserIds(): Promise<string[] | undefined> {
+async function getAllUserIds(): Promise<string[] | undefined> {
   try {
     console.log("user.model.getUserIds()");
     const allUsers = await prisma.user.findMany({ distinct: ["userId"] });
@@ -18,32 +18,60 @@ async function getUserIds(): Promise<string[] | undefined> {
   }
 }
 
-async function getUsers(userId: string) {
-  let results: User[] = [];
+// Get user profile, if user does not exist return false
+async function getUser(userId: string) {
   try {
-    console.log("user.model.getUsers() for userId: ", userId);
+    console.log("user.model.getUser() for userId: ", userId);
+    let result: User | false;
     const user = await prisma.user.findUnique({
       where: {
         userId: userId,
       },
     });
-    if (!user) throw new Error(`no user profile found for userId: ${userId}`);
-    user && results.push(user);
-    let linkedUsers: User[] = [];
-    if (user?.linkedUserIds) {
-      linkedUsers = await prisma.user.findMany({
-        where: {
-          userId: {
-            in: user.linkedUserIds,
-          },
-        },
-      });
-    }
-    results = results.concat(linkedUsers);
+    if (user) return (result = user);
+    else return (result = false);
   } catch (err) {
     console.error("ERROR: ", err);
   }
-  return results;
+}
+
+// Get user profiles of the user and all linked users, if user does not exist return false
+async function getUsers(userId: string) {
+  try {
+    console.log("user.model.getUsers() for userId: ", userId);
+    let results: User[] = [];
+    const user = await getUser(userId);
+    if (user) {
+      results.push(user);
+      let linkedUsers: User[] = [];
+      if (user?.linkedUserIds) {
+        linkedUsers = await prisma.user.findMany({
+          where: {
+            userId: {
+              in: user.linkedUserIds,
+            },
+          },
+        });
+      }
+      return (results = results.concat(linkedUsers));
+    } else {
+      return [];
+    }
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// Get userIds of the user and all linked users, if user does not exist return false
+async function getUserIds(userId: string) {
+  try {
+    console.log("user.model.getUserIds() for userId: ", userId);
+    const allUsers = await getUsers(userId);
+    const allUserIds = allUsers?.map((user) => user.userId);
+    return allUserIds;
+  } catch (err) {
+    console.error("ERROR", err);
+  }
 }
 
 async function createUser(userData: NewUserRequest) {
@@ -95,9 +123,39 @@ async function deleteUser(userId: string) {
 }
 
 export default {
-  getUserIds,
+  getAllUserIds,
+  getUser,
   getUsers,
+  getUserIds,
   createUser,
   updateUser,
   deleteUser,
 };
+
+// async function getUsers(userId: string) {
+//   let results: User[] = [];
+//   try {
+//     console.log("user.model.getUsers() for userId: ", userId);
+//     const user = await prisma.user.findUnique({
+//       where: {
+//         userId: userId,
+//       },
+//     });
+//     if (!user) throw new Error(`no user profile found for userId: ${userId}`);
+//     user && results.push(user);
+//     let linkedUsers: User[] = [];
+//     if (user?.linkedUserIds) {
+//       linkedUsers = await prisma.user.findMany({
+//         where: {
+//           userId: {
+//             in: user.linkedUserIds,
+//           },
+//         },
+//       });
+//     }
+//     results = results.concat(linkedUsers);
+//   } catch (err) {
+//     console.error("ERROR: ", err);
+//   }
+//   return results;
+// }

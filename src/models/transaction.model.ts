@@ -11,12 +11,11 @@ async function getTransactions(
 ) {
   try {
     console.log("transaction.model.getTransactions()");
-    const allUsers = await UserModel.getUsers(userId);
-    const allUserIds = allUsers?.map((user) => user.userId);
+    const userIds = await UserModel.getUserIds(userId);
     const results = await prisma.transaction.findMany({
       where: {
         userId: {
-          in: allUserIds,
+          in: userIds,
         },
       },
     });

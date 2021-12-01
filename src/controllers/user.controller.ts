@@ -6,10 +6,10 @@ import UserModel from "../models/user.model";
 // for userIds in case they can"t remember / retrieve their test userId
 // returns all userIds in the database
 // TODO: remove controller once login implemented
-async function getUserIds(req: Request, res: Response): Promise<void> {
+async function getAllUserIds(req: Request, res: Response): Promise<void> {
   try {
     console.log("user.controller.getUserIds()");
-    const userIds = await UserModel.getUserIds();
+    const userIds = await UserModel.getAllUserIds();
     res.status(200).send(userIds);
   } catch (err) {
     console.error(err);
@@ -73,7 +73,7 @@ async function deleteUser(req: Request, res: Response): Promise<void> {
 }
 
 export default {
-  getUserIds,
+  getAllUserIds,
   getUsers,
   createUser,
   updateUser,
