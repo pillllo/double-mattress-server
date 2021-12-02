@@ -5,6 +5,7 @@ import cors from "cors";
 import router from "./router";
 
 function bootstrapServer() {
+  // support switching between .env.production and .env.development
   const environment = process.env.ENVIRONMENT || "development";
   const file = `.env.${environment}`;
   console.log(`Starting in mode: ${environment}, attempting to load ${file}`);
@@ -21,8 +22,8 @@ function bootstrapServer() {
   }
   // correct .env file has been found, now load it
   require("custom-env").env(environment);
-  const { PORT, DATABASE_URL } = process.env;
-  console.log(DATABASE_URL);
+  const { PORT } = process.env;
+
   const app = express();
   const corsConfig = {
     origin: "http://localhost:3000",
