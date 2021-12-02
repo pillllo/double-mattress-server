@@ -8,7 +8,9 @@ model TransactionAggregate {
   userId                     String
   year                       Int
   month                      Int
-  periodType                 String
+  periodType                 String @default("month")
+  categoriesForPeriod        Json
+  incomeForPeriod            Int
   expensesForPeriod          Int
   savingsForPeriod           Int
   cumulativeSavingsSinceJoin Int
@@ -17,13 +19,12 @@ model TransactionAggregate {
 }
 */
 
-async function generateAggregates () {
+async function generateAggregates() {
   // TODO: HERE!!!
   // see if ANY records -maybe do in previous func?
   // find last month
   // get transactions for all intervening months
   // generate
-
 }
 
 async function getMonthAggregates(userId: string, monthOfInterest: Date) {
@@ -32,7 +33,6 @@ async function getMonthAggregates(userId: string, monthOfInterest: Date) {
   try {
     console.log("history.model.getMonthAggregates()");
     return [];
-
   } catch (err) {
     console.error("ERROR: ", err);
   }

@@ -32,7 +32,7 @@ RESPONSE
     monthlyAverageSinceJoining: 947698,
     totalSinceJoining: 456987798,
   }
-}    
+}
 */
 
 async function getDashboard(req: Request, res: Response) {

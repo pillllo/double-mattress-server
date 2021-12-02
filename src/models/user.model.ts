@@ -22,14 +22,14 @@ async function getAllUserIds(): Promise<string[] | undefined> {
 async function getUser(userId: string) {
   try {
     console.log("user.model.getUser() for userId: ", userId);
-    let result: User | false;
+    let result: User | null;
     const user = await prisma.user.findUnique({
       where: {
         userId: userId,
       },
     });
     if (user) return (result = user);
-    else return (result = false);
+    else return (result = null);
   } catch (err) {
     console.error("ERROR: ", err);
   }

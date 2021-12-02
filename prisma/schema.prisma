@@ -33,7 +33,9 @@ model TransactionAggregate {
   userId                     String
   year                       Int
   month                      Int
-  periodType                 String
+  periodType                 String @default("month")
+  categoriesForPeriod        Json
+  incomeForPeriod            Int
   expensesForPeriod          Int
   savingsForPeriod           Int
   cumulativeSavingsSinceJoin Int

@@ -37,6 +37,6 @@ router.post("/dashboard", dashboardController.getDashboard);
 // PROJECTIONS
 //----------------------------------------------------------------
 
-router.get("/projections", projectionController.getProjections);
+router.post("/projections", projectionController.getProjections);
 
 export default router;

@@ -1,6 +1,5 @@
 import prisma from "./db";
 import { UserId } from "../types/id";
-import UserModel from "./user.model";
 
 type DateRange = {
   startDate: string;
@@ -8,15 +7,17 @@ type DateRange = {
 };
 
 async function getAverageByType(
-  userId: UserId,
+  userIds: UserId[] | undefined,
   transactionType: string,
   dateRange: DateRange
 ) {
   try {
-    const userIds = await UserModel.getUserIds(userId);
     // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
     const aggregations = await prisma.transaction.aggregate({
       _avg: {
+        amount: true,
+      },
+      _count: {
         amount: true,
       },
       where: {
@@ -38,20 +39,54 @@ async function getAverageByType(
   }
 }
 
+async function getAverageByCategory(
+  userIds: UserId[] | undefined,
+  category: string,
+  dateRange: DateRange
+) {
+  try {
+    // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
+    const aggregations = await prisma.transaction.aggregate({
+      _avg: {
+        amount: true,
+      },
+      _count: {
+        amount: true,
+      },
+      where: {
+        userId: {
+          in: userIds,
+        },
+        category: {
+          equals: category,
+        },
+        date: {
+          gte: dateRange.startDate,
+          lt: dateRange.endDate,
+        },
+      },
+    });
+    return aggregations._avg.amount;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
 // savingsCumulative
 
 // TRANSACTIONS ONLY - NO PROJECTIONS
 
 // AVERAGES
-// Get sum of all relevant transactions (by date & type)
-// Divide sum by X months
+// Get average of all relevant transactions (by date & type)
 
 // savings
-// income
-// expenses
-// categories
-//    rent
-//    ...
-//    others
 
-export default { getAverageByType };
+// types
+//   income
+//   expenses
+// categories
+//   rent
+//   ...
+//   others
+
+export default { getAverageByType, getAverageByCategory };
