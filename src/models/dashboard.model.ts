@@ -1,17 +1,14 @@
 import prisma from "./db";
 
-// import UserModel from "../models/user.model";
-// import Transaction from "../types/transaction";
+import UserModel from "../models/user.model";
+import Transaction from "../types/transaction";
 
 // TODO: limit number of transactions
-async function getDashboardData(
-  userId: string,
-  transactionsPerUser: number = 100
-) {
+async function getDashboardData(userId: string, from?: string) {
   try {
-    console.log("transaction.model.getTransactions()");
-    // const allUsers = await UserModel.getUsers(userId);
-    // const allUserIds = allUsers?.map((user) => user.userId);
+    console.log("dashboard.model.getDashboardData()");
+    const allUsers = await UserModel.getUsers(userId);
+    const allUserIds = allUsers?.map((user) => user.userId);
     // const results = await prisma.transaction.findMany({
     //   where: {
     //     userId: {

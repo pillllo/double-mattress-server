@@ -8,6 +8,7 @@ async function getDashboard(req: Request, res: Response) {
     const { userId, from, to } = req.body;
     const allUsers = await UserModel.getUsers(userId);
     const allUserIds = allUsers?.map((user) => user.userId);
+    allUsers.forEach((userId) => {});
     // const transactions = await DashboardModel.getDashboardData();
     res.status(418).send();
   } catch (error) {

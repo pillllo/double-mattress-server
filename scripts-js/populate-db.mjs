@@ -94,23 +94,24 @@ function getRandomDescription(category) {
   return options[randomIdx];
 }
 
-async function processTransactions (transactions) {
-  console.log('processTransactions()');
-  const toProcess = transactions.length;
+async function processTransactions(transactions) {
+  console.log("processTransactions()");
+  const toProcess = 10;
+  // const toProcess = transactions.length;
   let errors = [];
   for (let i = 0; i < toProcess; i += 1) {
     try {
       console.log(`transaction: ${i} of ${toProcess}`);
       const t = transactions[i];
-      const tResult = await axios.post(`${SERVER_URL}/transactions`, t);
+      const tResult = await axios.post(`${SERVER_URL}/transactions/create`, t);
       if (!tResult.data) throw new Error("transaction create error");
     } catch (err) {
       errors.push(t);
       console.error(err);
-      console.error('ERROR: total errors: ', errors.length);
+      console.error("ERROR: total errors: ", errors.length);
     }
   }
-  console.log('Finished with errors: ', errors.length);
+  console.log("Finished with errors: ", errors.length);
 }
 
 //----------------------------------------------------------------
@@ -131,7 +132,8 @@ const CATEGORIES = {
 };
 
 // change these freely to alter script behaviour
-const SERVER_URL = "http://localhost:3001";
+const SERVER_URL = "http://localhost:6666";
+// const SERVER_URL = "http://localhost:3001";
 const MONTHS_TO_GENERATE = 4;
 const USER_1_NAME = "Annie";
 const USER_2_NAME = "Ben";
@@ -141,12 +143,12 @@ const USER_2_NAME = "Ben";
   try {
     const user1Data = createUser(USER_1_NAME);
     const user2Data = createUser(USER_2_NAME);
-    const res1 = await axios.post(`${SERVER_URL}/users`, user1Data);
+    const res1 = await axios.post(`${SERVER_URL}/users/create`, user1Data);
     if (!res1.data) throw new Error("server error");
     const user1 = res1.data;
     console.log("user1.userId: ", user1.userId);
     user2Data.linkedUserIds.push(user1.userId);
-    const res2 = await axios.post(`${SERVER_URL}/users`, user2Data);
+    const res2 = await axios.post(`${SERVER_URL}/users/create`, user2Data);
     const user2 = res2.data;
     // TODO: update user1 -> user2.linkedIds[]
     // user1.linkedUserIds.push(user2.userId);
@@ -165,7 +167,6 @@ const USER_2_NAME = "Ben";
       .fill(0)
       .map((_, idx) => monthNow - idx);
 
-
     [user1, user2].forEach((user) => {
       const { userId, firstName } = user;
       const userTransactions = [];
@@ -178,7 +179,8 @@ const USER_2_NAME = "Ben";
       // function declared here to make use of user data in closure
       const createTransaction = (day, month, amount, category, description) => {
         return {
-          transactionType: category === CATEGORIES.income ? "income" : "expense",
+          transactionType:
+            category === CATEGORIES.income ? "income" : "expense",
           userId,
           amount: amount * 100 + random(0, 99),
           currency: "EUR",
