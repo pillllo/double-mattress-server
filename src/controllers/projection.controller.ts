@@ -3,7 +3,6 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
-// const moment = require("moment");
 moment().format();
 
 // const categories = [
@@ -29,7 +28,7 @@ const categories = [
 ];
 const types = ["income", "expense"];
 
-// Put together projection data (object) based on average historical data
+// Calculate projection data (object) based on average historical data
 async function getProjections(req: Request, res: Response) {
   try {
     const { userId, date } = req.body;
@@ -107,13 +106,28 @@ async function getProjections(req: Request, res: Response) {
   }
 }
 
-// HELPER FUNCTIONS
+// Create a new projectedChange in the db
+async function createProjectedChange(req: Request, res: Response) {
+  try {
+    const projectedChangeData = req.body;
+    const newProjectedChange = await ProjectionModel.createProjectedChange(
+      projectedChangeData
+    );
+    console.log("🎯 newProjectedChange", newProjectedChange);
+    res.status(201).send("Projected change created in the db");
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not create projected change");
+  }
+}
 
-// Set the dateRange: returns startDate & endDate
-// Reset date to first day of the current month
-// Then subtracts 3 months
+//----------------------------------------------------------------
+// HELPER FUNCTIONS
+//----------------------------------------------------------------
+
+// Returns startDate & endDate of a dateRange
 // endDate = first day of the current month
-// startDate = first day of the month 3 months ago
+// startDate = first day of the month, 3 months ago
 function setDateRange() {
   const today = new Date();
 
@@ -124,6 +138,8 @@ function setDateRange() {
   return { startDate, endDate };
 }
 
+// Returns difference, in months, between the queried date
+// and the current month
 function monthsDifference(date: string) {
   const today = new Date();
 
@@ -137,6 +153,7 @@ function monthsDifference(date: string) {
 
 const projectionController = {
   getProjections,
+  createProjectedChange,
 };
 
 export default projectionController;

@@ -2,6 +2,7 @@ type Projection = {
   savings: Savings;
   typeAverages: TypeAverages;
   categoryAverages: CategoryAverages;
+  month: string;
 };
 
 type Savings = {

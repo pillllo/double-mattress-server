@@ -1,5 +1,7 @@
 import prisma from "./db";
 import { UserId } from "../types/id";
+import { v4 as uuid } from "uuid";
+import { ProjectedChange } from ".prisma/client";
 
 type DateRange = {
   startDate: string;
@@ -72,4 +74,19 @@ async function getAverageByCategory(
   }
 }
 
-export default { getAverageByType, getAverageByCategory };
+async function createProjectedChange(projectedChangeData: ProjectedChange) {
+  try {
+    const newProjectedChange = await prisma.projectedChange.create({
+      data: { ...projectedChangeData, id: uuid() },
+    });
+    return newProjectedChange;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+export default {
+  getAverageByType,
+  getAverageByCategory,
+  createProjectedChange,
+};
