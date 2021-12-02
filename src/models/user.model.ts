@@ -36,7 +36,7 @@ async function getUser(userId: string) {
 }
 
 // Get user profiles of the user and all linked users, if user does not exist return false
-async function getUsers(userId: string) {
+async function getUsers(userId: string): Promise<User[]> {
   try {
     console.log("user.model.getUsers() for userId: ", userId);
     let results: User[] = [];
@@ -55,10 +55,11 @@ async function getUsers(userId: string) {
       }
       return (results = results.concat(linkedUsers));
     } else {
-      return [];
+      throw new Error("userId not found");
     }
   } catch (err) {
     console.error("ERROR: ", err);
+    return [];
   }
 }
 

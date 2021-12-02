@@ -5,12 +5,9 @@ import UserModel from "../models/user.model";
 import Transaction from "../types/transaction";
 
 // TODO: limit number of transactions
-async function getTransactions(
-  userId: string,
-  transactionsPerUser: number = 100
-) {
+async function getTransactions(userId: string, from?: Date, to?: Date) {
   try {
-    console.log("transaction.model.getTransactions()");
+    console.log("transaction.model.,getTransactions()");
     const userIds = await UserModel.getUserIds(userId);
     const results = await prisma.transaction.findMany({
       where: {
