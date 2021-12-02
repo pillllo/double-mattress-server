@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "jest",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only --exit-child src/app.ts",
-    "start": "node build/app.js",
+    "dev": "ENVIRONMENT=development ts-node-dev --respawn --pretty --transpile-only --exit-child src/app.ts",
+    "start": "ENVIRONMENT=production node build/app.js",
     "postinstall": "tsc"
   },
   "author": "Natalie Pilling, James Foxlee, David Longaron, Liam Morris",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@prisma/client": "^3.5.0",
     "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
+    "custom-env": "^2.0.1",
     "express": "^4.17.1",
     "uuid": "^8.3.2"
   },
