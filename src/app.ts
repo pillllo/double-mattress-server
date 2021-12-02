@@ -7,11 +7,11 @@ import router from "./router";
 function bootstrapServer() {
   // support switching between .env.production and .env.development
   const environment = process.env.ENVIRONMENT || "development";
-  const file = `.env.${environment}`;
+  const file = environment === "production" ? ".env" : `.env.${environment}`;
   console.log(`Starting in mode: ${environment}, attempting to load ${file}`);
   const filePath = path.resolve(process.cwd(), file);
   const exists = fs.existsSync(filePath);
-  if (!exists) {
+  if (!exists && environment !== "production") {
     console.log(`Unable to find ${file} file`);
     console.log("Please perform the following actions:");
     console.log(`1) create ${file} in root dir with env variables`);
