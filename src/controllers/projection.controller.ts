@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
+import Projection from "../types/projection";
+import moment from "moment";
+// const moment = require("moment");
+moment().format();
 
 // const categories = [
 //   "salary",
@@ -73,17 +77,22 @@ async function getProjections(req: Request, res: Response) {
 
       // TODO: get from historical table
       // SAVINGS: get total savings since joining
+      // set start value depending on months from current months
       let totalSinceJoining = 1000000;
+      const diffQueriedMonthCurrentMonth = monthsDifference(date);
+      totalSinceJoining =
+        totalSinceJoining +
+        monthlyAverage3Months * diffQueriedMonthCurrentMonth;
 
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
-      let projections = {};
+      // let projections = {};
+      let projections: Projection[] = [];
       let month = 0;
+
       while (month <= 11) {
         savings = { ...savings, totalSinceJoining };
-        projections = {
-          ...projections,
-          [month]: { savings, typeAverages, categoryAverages },
-        };
+        const monthlyData = { savings, typeAverages, categoryAverages };
+        projections.push(monthlyData);
         month++;
         totalSinceJoining += monthlyAverage3Months;
       }
@@ -120,6 +129,30 @@ function setDateRange() {
   let subtractThreeMonths = startDate.setMonth(startDate.getMonth() - 3);
   startDate = new Date(subtractThreeMonths).toISOString();
   return { startDate, endDate };
+}
+
+function monthsDifference(date: string) {
+  const today = new Date();
+  const queriedDate = new Date(date);
+
+  const currentMonthFirstDay: Date | string = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+  );
+
+  let queriedMonthFirstDay: Date | string = new Date(
+    queriedDate.getFullYear(),
+    queriedDate.getMonth(),
+    1
+  );
+
+  var currentMonth = moment(currentMonthFirstDay);
+  var queriedMonth = moment(queriedMonthFirstDay);
+
+  const monthsDifference = queriedMonth.diff(currentMonth, "months");
+  console.log("🎯 monthsDiff", monthsDifference);
+  return monthsDifference;
 }
 
 const projectionController = {
