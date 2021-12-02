@@ -5,3 +5,12 @@ export function daysInMonth(month: number, year: number): number {
   // of January, not February
   return new Date(year, month, 0).getDate();
 }
+
+export function getSanitisedDate(input: any): Date | undefined {
+  if (typeof input === "string") {
+    const date = new Date(input);
+    // if initialised with invalid string, getTime() returns NaN
+    if (!isNaN(date.getTime())) return date;
+  }
+  return undefined;
+}

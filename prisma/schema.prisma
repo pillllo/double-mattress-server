@@ -27,3 +27,16 @@ model Transaction {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+model TransactionAggregate {
+  id                         Int    @id @default(autoincrement())
+  userId                     String
+  year                       Int
+  month                      Int
+  periodType                 String
+  expensesForPeriod          Int
+  savingsForPeriod           Int
+  cumulativeSavingsSinceJoin Int
+  avgMonthlySavingsSinceJoin Int
+  monthsSinceJoin            Int
+}

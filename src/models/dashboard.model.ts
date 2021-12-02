@@ -1,23 +1,25 @@
 import prisma from "./db";
 
-import UserModel from "../models/user.model";
-import Transaction from "../types/transaction";
+import HistoryModel from "../models/history.model";
+import TransactionModel from "../models/transaction.model";
+import { UserId } from "../types/id";
 
-// TODO: limit number of transactions
-async function getDashboardData(userId: string, from?: string) {
+async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   try {
     console.log("dashboard.model.getDashboardData()");
-    const allUsers = await UserModel.getUsers(userId);
-    const allUserIds = allUsers?.map((user) => user.userId);
-    // const results = await prisma.transaction.findMany({
-    //   where: {
-    //     userId: {
-    //       in: allUserIds,
-    //     },
-    //   },
-    // });
-    // console.log(`Found ${results.length} records`);
-    // return results;
+    console.log(userIds);
+    console.log(`desiredDate: ${desiredDate.toISOString()}`);
+    const now = new Date();
+    const nowMonth = now.getMonth();
+    const desiredMonth = desiredDate.getMonth();
+    // ask history model if we have any previous months
+    // will need them regardless
+    const aggregates = {};
+    userIds.forEach((userId) => {
+      const previousMonths = HistoryModel.getMonthAggregates(userId, desiredDate);
+    })
+    // get transactions for current month
+
   } catch (err) {
     console.error("ERROR: ", err);
   }
