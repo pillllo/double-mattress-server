@@ -27,9 +27,10 @@ function getRandomCategory(categories) {
 }
 
 function getRandomDescription(category) {
+  console.log("getRandomDescription() for category: ", category);
   let options;
   switch (category) {
-    case "Income":
+    case "Other Income":
       options = [
         "Refund",
         "Spending money from granny",
@@ -122,7 +123,8 @@ async function processTransactions(transactions) {
 // in main() e.g. when adding salary entries, bills etc
 
 const CATEGORIES = {
-  income: "Income",
+  salary: "Salary",
+  otherIncome: "Other Income",
   bills: "Bills and Services",
   home: "Home",
   shopping: "Shopping",
@@ -180,7 +182,10 @@ const USER_2_NAME = "Ben";
       const createTransaction = (day, month, amount, category, description) => {
         return {
           transactionType:
-            category === CATEGORIES.income ? "income" : "expense",
+            category === CATEGORIES.salary ||
+            category === CATEGORIES.otherIncome
+              ? "income"
+              : "expense",
           userId,
           amount: amount * 100 + random(0, 99),
           currency: "EUR",
@@ -196,7 +201,7 @@ const USER_2_NAME = "Ben";
           dateNow,
           month,
           salary,
-          CATEGORIES.income,
+          CATEGORIES.salary,
           "Salary from EvilCorp"
         );
 
@@ -232,7 +237,9 @@ const USER_2_NAME = "Ben";
         // random transactions for the month
         let numRandomTransactions = random(70, 100);
         for (let i = 0; i <= numRandomTransactions; i += 1) {
-          const category = getRandomCategory(CATEGORIES);
+          const categoriesNoSalary = { ...CATEGORIES };
+          delete categoriesNoSalary.salary;
+          const category = getRandomCategory(categoriesNoSalary);
           const description = getRandomDescription(category);
           const randomTransaction = createTransaction(
             random(1, getDaysInMonth(yearNow, month)),
@@ -251,10 +258,3 @@ const USER_2_NAME = "Ben";
     console.error(err);
   }
 })();
-
-/*
-
-
-
-
-*/

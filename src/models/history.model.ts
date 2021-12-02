@@ -27,11 +27,19 @@ async function generateAggregates() {
   // generate
 }
 
-async function getMonthAggregates(userId: string, monthOfInterest: Date) {
+async function getAggregateForMonth(userId: string, dateOfInterest: Date) {
   // monthOfInterest marks the last month in returned data set
   // count all records we have to calculate new average
   try {
     console.log("history.model.getMonthAggregates()");
+    const monthAgg = await prisma.transactionAggregate.findFirst({
+      where: {
+        userId: userId,
+        month: dateOfInterest.getMonth() + 1,
+        year: dateOfInterest.getFullYear(),
+      },
+    });
+    // if (!)
     return [];
   } catch (err) {
     console.error("ERROR: ", err);
@@ -39,5 +47,5 @@ async function getMonthAggregates(userId: string, monthOfInterest: Date) {
 }
 
 export default {
-  getMonthAggregates,
+  getAggregateForMonth,
 };

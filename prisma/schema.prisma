@@ -32,7 +32,8 @@ model TransactionAggregate {
   id                         Int    @id @default(autoincrement())
   userId                     String
   year                       Int
-  month                      Int
+  month                      Int // one-based i.e. Feb is 2
+  monthName                  String
   periodType                 String @default("month")
   categoriesForPeriod        Json
   incomeForPeriod            Int
