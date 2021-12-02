@@ -28,16 +28,15 @@ const categories = [
   "Others",
 ];
 const types = ["income", "expense"];
-let savings = {};
-let typeAverages = { income: 0, expense: 0 };
-let categoryAverages = {};
 
 // Put together projection data (object) based on average historical data
 async function getProjections(req: Request, res: Response) {
   try {
     const { userId, date } = req.body;
+
     // Checks if user exists
     const user = await UserModel.getUser(userId);
+
     if (user) {
       // Get userId of user and all linked users
       const userIds = await UserModel.getUserIds(userId);
@@ -48,6 +47,7 @@ async function getProjections(req: Request, res: Response) {
       const dateRange = setDateRange();
 
       // TYPES: get average for base projections (avg value for each type, without projectedChanges)
+      let typeAverages = { income: 0, expense: 0 };
       await Promise.all(
         types.map(async (type) => {
           const average = await ProjectionModel.getAverageByType(
@@ -60,6 +60,7 @@ async function getProjections(req: Request, res: Response) {
       );
 
       // CATEGORIES: get average for base projections (avg value for each category, without projectedChanges)
+      let categoryAverages = {};
       await Promise.all(
         categories.map(async (type) => {
           const average = await ProjectionModel.getAverageByCategory(
@@ -72,12 +73,13 @@ async function getProjections(req: Request, res: Response) {
       );
 
       // SAVINGS: get average monthly savings
+      let savings = {};
       const monthlyAverage3Months = typeAverages.income - typeAverages.expense;
       savings = { ...savings, monthlyAverage3Months };
 
       // TODO: get from historical table
       // SAVINGS: get total savings since joining
-      // set start value depending on months from current months
+      // set start value depending on diff in months from current months
       let totalSinceJoining = 1000000;
       const diffQueriedMonthCurrentMonth = monthsDifference(date);
       totalSinceJoining =
@@ -85,16 +87,16 @@ async function getProjections(req: Request, res: Response) {
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
 
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
-      // let projections = {};
       let projections: Projection[] = [];
-      let month = 0;
-
-      while (month <= 11) {
+      let monthCounter = 0;
+      let month = moment(date).startOf("month").toISOString();
+      while (monthCounter <= 11) {
         savings = { ...savings, totalSinceJoining };
-        const monthlyData = { savings, typeAverages, categoryAverages };
+        const monthlyData = { savings, typeAverages, categoryAverages, month };
         projections.push(monthlyData);
-        month++;
         totalSinceJoining += monthlyAverage3Months;
+        month = moment(month).add(1, "months").toISOString();
+        monthCounter++;
       }
 
       res.status(200).send(projections);
@@ -115,43 +117,21 @@ async function getProjections(req: Request, res: Response) {
 function setDateRange() {
   const today = new Date();
 
-  const endDate: Date | string = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1
-  ).toISOString();
+  const endDate = moment(today).startOf("month").toISOString();
 
-  let startDate: Date | string = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1
-  );
-  let subtractThreeMonths = startDate.setMonth(startDate.getMonth() - 3);
-  startDate = new Date(subtractThreeMonths).toISOString();
+  const startDate = moment(endDate).subtract(3, "months").toISOString();
+
   return { startDate, endDate };
 }
 
 function monthsDifference(date: string) {
   const today = new Date();
-  const queriedDate = new Date(date);
 
-  const currentMonthFirstDay: Date | string = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1
-  );
-
-  let queriedMonthFirstDay: Date | string = new Date(
-    queriedDate.getFullYear(),
-    queriedDate.getMonth(),
-    1
-  );
-
-  var currentMonth = moment(currentMonthFirstDay);
-  var queriedMonth = moment(queriedMonthFirstDay);
+  var currentMonth = moment(today);
+  var queriedMonth = moment(date);
 
   const monthsDifference = queriedMonth.diff(currentMonth, "months");
-  console.log("🎯 monthsDiff", monthsDifference);
+
   return monthsDifference;
 }
 
@@ -160,11 +140,3 @@ const projectionController = {
 };
 
 export default projectionController;
-
-// setDateRange based on input date
-// function setDateRange(endDate: string) {
-//   let todayDate = new Date(endDate);
-//   let subtractThreeMonts = todayDate.setMonth(todayDate.getMonth() - 3);
-//   let startDate = new Date(subtractThreeMonts).toISOString();
-//   return { startDate, endDate };
-// }
