@@ -27,9 +27,9 @@ async function getProjections(req: Request, res: Response) {
         "expense",
         dateRange
       );
-      types.forEach((type) => {
-        ProjectionModel.getAverageByType(userIds, "income", dateRange);
-      });
+      // types.forEach((type) => {
+      //   ProjectionModel.getAverageByType(userIds, "income", dateRange);
+      // });
 
       console.log(`${incomeAvg}, ${expensesAvg}`);
       res.status(200).send({ incomeAvg, expensesAvg });
