@@ -30,16 +30,17 @@ function bootstrapServer() {
     credentials: true,
   };
 
-app.use(cors(corsConfig));
-app.use(express.json());
-// "security"
-app.use((req, res, next) => {
-  const jwt = req.headers["client-jwt"];
-  if (jwt !== process.env.CLIENT_JWT) {
-    console.log("auth failed");
-    res.status(404).send();
-  } else {
-    next();
+  app.use(cors(corsConfig));
+  app.use(express.json());
+  // "security"
+  app.use((req, res, next) => {
+    const jwt = req.headers["client-jwt"];
+    if (jwt !== process.env.CLIENT_JWT) {
+      console.log("auth failed");
+      res.status(404).send();
+    } else {
+      next();
+    }
   });
   app.use(router);
   app.get("*", (req, res) => {
