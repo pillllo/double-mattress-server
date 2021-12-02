@@ -19,11 +19,11 @@ A responsive web app / PWA that helps couples visualise and forecast combined fi
 
 ## `GET /userIds`
 
-Get userIds for all users in the database.
+Get userIds for all users in the database. This will be retired after
 
 **Request body**
 
-Send an empty body.
+Empty.
 
 **Response**
 
@@ -40,7 +40,7 @@ Sample response:
 
 # Get user profile data
 
-## `GET /users`
+## `POST /users`
 
 Get user profile data for a user and their linked users.
 
@@ -94,7 +94,7 @@ Sample response:
 
 # Create a user
 
-## `POST /users`
+## `POST /users/create`
 
 **Request body**
 
@@ -117,7 +117,7 @@ Returns the newly created `User`.
 
 # Delete a user
 
-## `DELETE /users`
+## `POST /users/delete`
 
 **Request body**
 
@@ -137,7 +137,7 @@ Returns data for the deleted `User`.
 
 # Get transactions for a user
 
-## `GET /transactions`
+## `POST /transactions`
 
 Get transaction data for provided user and any linked users.
 
@@ -207,7 +207,7 @@ Sample response:
 
 # Create transaction for a user
 
-## `PUT /transactions`
+## `POST /transactions/create`
 
 Create a transaction for a given user.
 
@@ -217,14 +217,14 @@ In the request body send an object with the following properties. Note the `tran
 
 ```
 {
-  "transactionType":  string // "income" | "expense"
+  "transactionType":  string    // "income" | "expense"
   "userId":           string
-  "amount":           integer // e.g. 1 EUR -> 100
+  "amount":           integer   // e.g. 1 EUR -> 100
   "currency":         string
   "category":         string
-  "date":             string // as ISO 8601 string*
+  "date":             string    // as ISO 8601 string*
   "description":      string
-  "includeAvg":       boolean // optional
+  "includeAvg":       boolean   // optional
 }
 ```
 
