@@ -1,6 +1,5 @@
 import prisma from "./db";
 import { UserId } from "../types/id";
-import UserModel from "./user.model";
 
 type DateRange = {
   startDate: string;
@@ -8,12 +7,11 @@ type DateRange = {
 };
 
 async function getAverageByType(
-  userId: UserId,
+  userIds: UserId[] | undefined,
   transactionType: string,
   dateRange: DateRange
 ) {
   try {
-    const userIds = await UserModel.getUserIds(userId);
     // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
     const aggregations = await prisma.transaction.aggregate({
       _avg: {
