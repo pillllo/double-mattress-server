@@ -8,8 +8,8 @@ function bootstrapServer() {
   const environment = process.env.ENVIRONMENT || "development";
   const file = `.env.${environment}`;
   console.log(`Starting in mode: ${environment}, attempting to load ${file}`);
-  // const filePath = ;
-  const exists = fs.existsSync(path.resolve(process.cwd(), file));
+  const filePath = path.resolve(process.cwd(), file);
+  const exists = fs.existsSync(filePath);
   if (!exists) {
     console.log(`Unable to find ${file} file`);
     console.log("Please perform the following actions:");
@@ -19,7 +19,7 @@ function bootstrapServer() {
     console.log('to the existing existing command in "scripts".');
     process.exit();
   }
-  // correct .env file has been loaded
+  // correct .env file has been found, now load it
   require("custom-env").env(environment);
   const { PORT, DATABASE_URL } = process.env;
   console.log(DATABASE_URL);
