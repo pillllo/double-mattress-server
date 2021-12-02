@@ -72,21 +72,4 @@ async function getAverageByCategory(
   }
 }
 
-// savingsCumulative
-
-// TRANSACTIONS ONLY - NO PROJECTIONS
-
-// AVERAGES
-// Get average of all relevant transactions (by date & type)
-
-// savings
-
-// types
-//   income
-//   expenses
-// categories
-//   rent
-//   ...
-//   others
-
 export default { getAverageByType, getAverageByCategory };
