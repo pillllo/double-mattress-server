@@ -96,8 +96,8 @@ function getRandomDescription(category) {
 
 async function processTransactions(transactions) {
   console.log("processTransactions()");
-  const toProcess = 10;
-  // const toProcess = transactions.length;
+  // const toProcess = 10;
+  const toProcess = transactions.length;
   let errors = [];
   for (let i = 0; i < toProcess; i += 1) {
     try {
