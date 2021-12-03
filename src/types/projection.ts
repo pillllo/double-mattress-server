@@ -6,13 +6,13 @@ type Projection = {
 };
 
 type Savings = {
-  monthlyAverage3Months?: number;
-  totalSinceJoining?: number;
+  monthlyAverage3Months: number;
+  totalSinceJoining: number;
 };
 
 type TypeAverages = {
-  income?: number;
-  expense?: number;
+  income: number;
+  expense: number;
 };
 
 type CategoryAverages = {

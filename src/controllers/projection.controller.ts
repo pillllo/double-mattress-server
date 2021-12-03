@@ -3,19 +3,7 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
-import { ECKeyPairKeyObjectOptions } from "crypto";
 moment().format();
-
-// const categories = [
-//   "salary",
-//   "otherIncome",
-//   "billsAndServices",
-//   "home",
-//   "shopping",
-//   "entertainment",
-//   "eatingOut",
-//   "others",
-// ];
 
 const categories = [
   "Salary",
@@ -75,7 +63,7 @@ async function getProjections(req: Request, res: Response) {
       );
 
       // SAVINGS: get average monthly savings
-      let savings = {};
+      let savings = { monthlyAverage3Months: 0, totalSinceJoining: 0 };
       const monthlyAverage3Months = typeAverages.income - typeAverages.expense;
       savings = { ...savings, monthlyAverage3Months };
 
@@ -111,7 +99,6 @@ async function getProjections(req: Request, res: Response) {
             if (
               moment(monthProjections).isSame(monthProjectedChange, "month")
             ) {
-              // let typeProjectedChanges = projectedChanges[j].type;
               let amountProjectedChanges = projectedChanges[j].amount;
               projections[i].typeAverages.expense += amountProjectedChanges;
               projections[i].savings.monthlyAverage3Months +=
@@ -120,7 +107,8 @@ async function getProjections(req: Request, res: Response) {
           }
         }
       }
-      console.log("🎯 projections", projections[10].typeAverages.expense);
+      // console.log("🎯 projections", projections[10].typeAverages.expense);
+      console.log("🎯 projections", projections);
       res.status(200).send(projections);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
   } catch (error) {
