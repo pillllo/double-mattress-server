@@ -3,6 +3,7 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
+import { ECKeyPairKeyObjectOptions } from "crypto";
 moment().format();
 
 // const categories = [
@@ -49,11 +50,12 @@ async function getProjections(req: Request, res: Response) {
       let typeAverages = { income: 0, expense: 0 };
       await Promise.all(
         types.map(async (type) => {
-          const average = await ProjectionModel.getAverageByType(
+          let average = await ProjectionModel.getAverageByType(
             userIds,
             type,
             dateRangeForAvgCalc
           );
+          if (!average) average = 0;
           typeAverages = { ...typeAverages, [type]: average };
         })
       );
@@ -62,11 +64,12 @@ async function getProjections(req: Request, res: Response) {
       let categoryAverages = {};
       await Promise.all(
         categories.map(async (type) => {
-          const average = await ProjectionModel.getAverageByCategory(
+          let average = await ProjectionModel.getAverageByCategory(
             userIds,
             type,
             dateRangeForAvgCalc
           );
+          if (!average) average = 0;
           categoryAverages = { ...categoryAverages, [type]: average };
         })
       );
@@ -98,6 +101,26 @@ async function getProjections(req: Request, res: Response) {
         monthCounter++;
       }
 
+      const projectedChanges = await getProjectedChanges(userId, date);
+      console.log("🎯 projections", projections[10].typeAverages.expense);
+      if (projectedChanges && projectedChanges.length > 0) {
+        for (let i = 0; i < projections.length; i++) {
+          let monthProjections = projections[i].month;
+          for (let j = 0; j < projectedChanges.length; j++) {
+            let monthProjectedChange = projectedChanges[j].date;
+            if (
+              moment(monthProjections).isSame(monthProjectedChange, "month")
+            ) {
+              // let typeProjectedChanges = projectedChanges[j].type;
+              let amountProjectedChanges = projectedChanges[j].amount;
+              projections[i].typeAverages.expense += amountProjectedChanges;
+              projections[i].savings.monthlyAverage3Months +=
+                amountProjectedChanges;
+            }
+          }
+        }
+      }
+      console.log("🎯 projections", projections[10].typeAverages.expense);
       res.status(200).send(projections);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
   } catch (error) {
@@ -113,34 +136,50 @@ async function createProjectedChange(req: Request, res: Response) {
     const newProjectedChange = await ProjectionModel.createProjectedChange(
       projectedChangeData
     );
-    console.log("🎯 newProjectedChange", newProjectedChange);
-    res.status(201).send("Projected change created in the db");
+    res.status(201).send(newProjectedChange);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not create projected change");
   }
 }
 
-async function getProjectedChanges(req: Request, res: Response) {
-  try {
-    console.log("🎯 called controller getProjectedChanges");
-    const { userId, date } = req.body;
+async function getProjectedChanges(userId: string, date: string) {
+  // Checks if user exists
+  const user = await UserModel.getUser(userId);
+  if (user) {
     // Get userId of user and all linked users
     const userIds = await UserModel.getUserIds(userId);
     const dateRangeProjectedChanges = dateRangeFromStartDate(date, 12);
-    console.log("🎯 dateRangeProjectedChanges", dateRangeProjectedChanges);
     const projectedChanges =
       await ProjectionModel.findProjectedChangesByDateRange(
         userIds,
         dateRangeProjectedChanges
       );
-    console.log("🎯 projectedChanges", projectedChanges);
-    res.status(200).send(projectedChanges);
-  } catch (error) {
-    console.error(error);
-    res.status(400).send("Could not find projected changes");
-  }
+    return projectedChanges;
+  } else return null;
 }
+
+// async function getProjectedChanges(req: Request, res: Response) {
+//   try {
+//     const { userId, date } = req.body;
+//     // Checks if user exists
+//     const user = await UserModel.getUser(userId);
+//     if (user) {
+//       // Get userId of user and all linked users
+//       const userIds = await UserModel.getUserIds(userId);
+//       const dateRangeProjectedChanges = dateRangeFromStartDate(date, 12);
+//       const projectedChanges =
+//         await ProjectionModel.findProjectedChangesByDateRange(
+//           userIds,
+//           dateRangeProjectedChanges
+//         );
+//       res.status(200).send(projectedChanges);
+//     } else res.status(400).send(`No user profile found for this userId`);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).send("Could not find projected changes");
+//   }
+// }
 
 //----------------------------------------------------------------
 // HELPER FUNCTIONS
@@ -163,6 +202,7 @@ function dateRangeFromCurrentMonthIntoPast(rangeInMonths: number) {
 // endDate = first day of the month, rangeInMonths months into the future
 function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
   startDate = moment(startDate).startOf("month").toISOString();
+  // const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
   const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
   return { startDate, endDate };
 }
