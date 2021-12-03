@@ -5,10 +5,7 @@ import TransactionModel from "../models/transaction.model";
 async function getTransactions(req: Request, res: Response) {
   try {
     const { userId, transactionsPerUser } = req.body;
-    const transactions = await TransactionModel.getTransactions(
-      userId,
-      transactionsPerUser
-    );
+    const transactions = await TransactionModel.getAllTransactions(userId);
     res.status(200).send(transactions);
   } catch (error) {
     console.error(error);

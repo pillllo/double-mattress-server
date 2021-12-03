@@ -24,4 +24,3 @@ yarn-error.log*
 .secret*
 *postman_collection*
 scripts/output
-prisma/migrations
