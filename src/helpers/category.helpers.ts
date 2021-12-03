@@ -1,6 +1,6 @@
-import CategoryMap from "../types/category-map";
+import DynamicMap from "../types/dynamic-map";
 
-const CATEGORIES: CategoryMap = {
+const CATEGORIES: DynamicMap = {
   salary: "Salary",
   otherIncome: "Other Income",
   bills: "Bills and Services",
@@ -11,7 +11,7 @@ const CATEGORIES: CategoryMap = {
   others: "Others",
 };
 
-const CATEGORY_KEYS: CategoryMap = {};
+const CATEGORY_KEYS: DynamicMap = {};
 
 for (const [key, value] of Object.entries(CATEGORIES)) {
   CATEGORY_KEYS[value] = key;

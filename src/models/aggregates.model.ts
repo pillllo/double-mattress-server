@@ -133,7 +133,7 @@ async function getAggregateForMonth(userId: UserId, dateOfInterest: Date) {
     return monthAgg;
   } catch (err) {
     console.error("ERROR: ", err);
-    return null;
+    return [];
   }
 }
 
