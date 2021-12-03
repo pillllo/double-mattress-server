@@ -19,7 +19,7 @@ async function getAllUserIds(): Promise<string[] | undefined> {
 }
 
 // Get user profile, if user does not exist return false
-async function getUser(userId: string) {
+async function getUser(userId: string): Promise<User | null> {
   try {
     console.log("user.model.getUser() for userId: ", userId);
     let result: User | null;
@@ -28,10 +28,11 @@ async function getUser(userId: string) {
         userId: userId,
       },
     });
-    if (user) return (result = user);
-    else return (result = null);
+    if (!user) throw new Error("no user returned");
+    return user;
   } catch (err) {
     console.error("ERROR: ", err);
+    return null;
   }
 }
 

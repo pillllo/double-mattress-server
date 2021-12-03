@@ -1,6 +1,6 @@
 import prisma from "./db";
 
-import HistoryModel from "../models/history.model";
+import AggregatesModel from "../models/aggregates.model";
 import TransactionModel from "../models/transaction.model";
 import { UserId } from "../types/id";
 
@@ -47,7 +47,7 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
     // will need them regardless
     const aggregates = {};
     userIds.forEach((userId) => {
-      const previousMonth = HistoryModel.getAggregateForMonth(
+      const previousMonth = AggregatesModel.getAggregateForMonth(
         userId,
         desiredDate
       );
@@ -58,6 +58,8 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   }
 }
 
-export default {
+const DashboardModel = {
   getDashboardData,
 };
+
+export default DashboardModel;

@@ -56,6 +56,8 @@ async function getDashboard(req: Request, res: Response) {
   }
 }
 
-export default {
+const DashboardController = {
   getDashboard,
 };
+
+export default DashboardController;

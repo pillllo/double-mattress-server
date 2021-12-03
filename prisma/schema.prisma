@@ -40,6 +40,4 @@ model TransactionAggregate {
   expensesForPeriod          Int
   savingsForPeriod           Int
   cumulativeSavingsSinceJoin Int
-  avgMonthlySavingsSinceJoin Int
-  monthsSinceJoin            Int
 }

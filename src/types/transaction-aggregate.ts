@@ -1,5 +1,4 @@
 import { UserId } from "./id";
-import Category from "./category";
 
 type TransactionAggregate = {
   id: number;
@@ -7,10 +6,8 @@ type TransactionAggregate = {
   year: number;
   month: number;
   monthName: string;
-  periodType: "month" | "year";
-  categoriesForPeriod: {
-    [key: string]: number;
-  };
+  periodType: string;
+  categoriesForPeriod: any;
   incomeForPeriod: number;
   expensesForPeriod: number;
   savingsForPeriod: number;
