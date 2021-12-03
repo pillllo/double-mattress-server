@@ -235,7 +235,7 @@ const USER_2_NAME = "Ben";
         userTransactions.push(waterT);
 
         // random transactions for the month
-        let numRandomTransactions = random(70, 90);
+        let numRandomTransactions = random(45, 70);
         for (let i = 0; i <= numRandomTransactions; i += 1) {
           const categoriesNoSalary = { ...CATEGORIES };
           delete categoriesNoSalary.salary;

@@ -8,38 +8,14 @@ import { addMonth, getMonthStart } from "../helpers/date.helpers";
 
 import { UserId } from "../types/id";
 
-/*
-RESPONSE FORMAT
+//----------------------------------------------------------------
+// HELPER FUNCTIONS FOR COMPILING AGGREGATE TRANSACTIONS INTO
+// DESIRED REPONSE SHAPE
+//
+// see README.md for response shape
+//----------------------------------------------------------------
 
-{
-  transactions: [], // unfiltered / unsorted transactions for all users
-  categoryTotals: {
-    home: {
-      USER_A_ID: 456,
-      USER_B_ID: 457,
-    },
-    shopping: 4567,
-    ...
-  },
-  typeTotals: {
-    income: {
-      USER_A_ID: 98456798,
-      USER_B_ID: 93485798,
-    },
-    expenses: {
-     USER_A_ID: 456,
-     USER_B_ID: 457,
-    },
-  savings: {
-    // combined for all linked users
-    currentMonth: 45774,
-    monthlyAverageSinceJoining: 947698,
-    totalSinceJoining: 456987798,
-  }
-}
-*/
-
-function mergeObjectNumericValues(sources: any, destination: any) {
+function _mergeObjectNumericValues(sources: any, destination: any) {
   sources.forEach((source: any) => {
     Object.keys(source).forEach((key) => {
       const value = source[key];
@@ -52,43 +28,36 @@ function mergeObjectNumericValues(sources: any, destination: any) {
   return destination;
 }
 
-function getBreakdownByUser(
+function _getBreakdownByUser(
   sources: [],
   destination: any,
   keysOfInterest: string[]
 ) {
-  // create an object with multiple keys of interest and nested totals by userId
-  // {
-  //   home: {
-  //     USER_ID_1: someValue,
-  //     USER_ID_2: someValue,
-  //   }
-  // }
   keysOfInterest.forEach((key) => {
     sources.forEach((source: any) => {
       const keyExists = destination.hasOwnProperty(key);
-      // initialise nested value to an object if not preset
+      // add desired key, and initialise nested value to an object if not preset
       destination[key] = keyExists ? destination[key] : {};
+      // add nested userId and value for that user
       destination[key][source.userId] = source.categoriesForPeriod[key];
     });
   });
   return destination;
 }
 
-// TODO: try to make TS happy over nested arrays
-function compileDashboardData(aggregates: any, transactions: any) {
+function _compileDashboardData(aggregates: any, transactions: any) {
   console.log("compileDashboardData()");
   // combine any numeric values from all aggregate objects
   // works for any number of aggregates
-  const merged = mergeObjectNumericValues(aggregates, {});
+  const merged = _mergeObjectNumericValues(aggregates, {});
   // return values
   const dashboardData = {
-    categoryTotals: getBreakdownByUser(
+    categoryTotals: _getBreakdownByUser(
       aggregates,
       {},
       getExpenseCategoryKeys()
     ),
-    typeTotals: getBreakdownByUser(aggregates, {}, getIncomeCategoryKeys()),
+    typeTotals: _getBreakdownByUser(aggregates, {}, getIncomeCategoryKeys()),
     savings: {
       currentMonth: merged.savingsForPeriod,
       totalSinceJoining: merged.cumulativeSavingsSinceJoin,
@@ -100,7 +69,6 @@ function compileDashboardData(aggregates: any, transactions: any) {
 
 async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   try {
-    console.time("getDashboardData");
     console.log("DashboardModel.getDashboardData()");
     // ask history model if we have any previous months
     // will need them regardless
@@ -126,9 +94,8 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
         return tr;
       })
     );
-    // compile and sendresponse
-    const compiled = compileDashboardData(aggregates, transactions);
-    console.timeEnd("getDashboardData");
+    // compile and send response
+    const compiled = _compileDashboardData(aggregates, transactions);
     return compiled;
   } catch (err) {
     console.error("ERROR: ", err);
