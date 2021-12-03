@@ -47,9 +47,7 @@ async function getDashboard(req: Request, res: Response) {
       allUserIds,
       desiredDate
     );
-    console.log(dashboardData);
-
-    res.status(418).send();
+    res.status(200).send(dashboardData);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not get dashboard data");

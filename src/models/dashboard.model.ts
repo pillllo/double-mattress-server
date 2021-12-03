@@ -1,15 +1,15 @@
-import prisma from "./db";
-
 import AggregatesModel from "../models/aggregates.model";
 import TransactionModel from "../models/transaction.model";
+import {
+  getIncomeCategoryKeys,
+  getExpenseCategoryKeys,
+} from "../helpers/category.helpers";
 import { addMonth, getMonthStart } from "../helpers/date.helpers";
 
-import DynamicMap from "../types/dynamic-map";
 import { UserId } from "../types/id";
-import Transaction from "../types/transaction";
 
 /*
-RESPONSE
+RESPONSE FORMAT
 
 {
   transactions: [], // unfiltered / unsorted transactions for all users
@@ -39,36 +39,60 @@ RESPONSE
 }
 */
 
-function mergeObjectValues(objects: []) {}
-
-// TODO: try to make TS happy over nested arrays
-function compileDashboardData(aggregates: any, transactions: any) {
-  console.log("compileDashboardData(), aggregates for merge follow");
-  // type TransactionAggregate = {
-  //   id: number;
-  //   userId: UserId;
-  //   year: number;
-  //   month: number;
-  //   monthName: string;
-  //   periodType: string;
-  //   categoriesForPeriod: any;
-  //   incomeForPeriod: number;
-  //   expensesForPeriod: number;
-  //   savingsForPeriod: number;
-  //   cumulativeSavingsSinceJoin: number;
-  // };
-
-  const merged: DynamicMap = {};
-  aggregates.forEach((agg: DynamicMap) => {
-    Object.keys(agg).forEach((key: string) => {
-      const value = agg[key];
+function mergeObjectNumericValues(sources: any, destination: any) {
+  sources.forEach((source: any) => {
+    Object.keys(source).forEach((key) => {
+      const value = source[key];
       if (typeof value === "number") {
-        const valueExists = merged.hasOwnProperty(key);
-        merged[key] = valueExists ? merged[key] + value : value;
+        const valueExists = destination.hasOwnProperty(key);
+        destination[key] = valueExists ? destination[key] + value : value;
       }
     });
   });
+  return destination;
+}
+
+function getBreakdownByUser(
+  sources: [],
+  destination: any,
+  keysOfInterest: string[]
+) {
+  // create an object with multiple keys of interest and nested totals by userId
+  // {
+  //   home: {
+  //     USER_ID_1: someValue,
+  //     USER_ID_2: someValue,
+  //   }
+  // }
+  keysOfInterest.forEach((key) => {
+    sources.forEach((source: any) => {
+      const keyExists = destination.hasOwnProperty(key);
+      // initialise nested value to an object if not preset
+      destination[key] = keyExists ? destination[key] : {};
+      destination[key][source.userId] = source.categoriesForPeriod[key];
+    });
+  });
+  return destination;
+}
+
+// TODO: try to make TS happy over nested arrays
+function compileDashboardData(aggregates: any, transactions: any) {
+  console.log("compileDashboardData()");
+  // combine any numeric values from all aggregate objects
+  // works for any number of aggregates
+  const merged = mergeObjectNumericValues(aggregates, {});
+  // return values
   const dashboardData = {
+    categoryTotals: getBreakdownByUser(
+      aggregates,
+      {},
+      getExpenseCategoryKeys()
+    ),
+    typeTotals: getBreakdownByUser(aggregates, {}, getIncomeCategoryKeys()),
+    savings: {
+      currentMonth: merged.savingsForPeriod,
+      totalSinceJoining: merged.cumulativeSavingsSinceJoin,
+    },
     transactions: transactions.flat(),
   };
   return dashboardData;
@@ -78,8 +102,6 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   try {
     console.time("getDashboardData");
     console.log("DashboardModel.getDashboardData()");
-    console.log(userIds);
-    console.log(`desiredDate: ${desiredDate.toISOString()}`);
     // ask history model if we have any previous months
     // will need them regardless
     const aggregates = await Promise.all(
@@ -91,7 +113,6 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
         return previousMonth;
       })
     );
-    console.log(aggregates);
     // get transactions for current month
     const from = getMonthStart(desiredDate);
     const to = getMonthStart(addMonth(desiredDate));
@@ -105,9 +126,10 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
         return tr;
       })
     );
-    // compile response
+    // compile and sendresponse
     const compiled = compileDashboardData(aggregates, transactions);
     console.timeEnd("getDashboardData");
+    return compiled;
   } catch (err) {
     console.error("ERROR: ", err);
   }
