@@ -134,9 +134,9 @@ const CATEGORIES = {
 };
 
 // change these freely to alter script behaviour
-// const SERVER_URL = "http://localhost:6666";
-const SERVER_URL = "http://localhost:3001";
-const MONTHS_TO_GENERATE = 5;
+const SERVER_URL = "http://localhost:6666";
+// const SERVER_URL = "http://localhost:3001";
+const MONTHS_TO_GENERATE = 6;
 const USER_1_NAME = "Annie";
 const USER_2_NAME = "Ben";
 
