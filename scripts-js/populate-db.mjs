@@ -122,7 +122,8 @@ async function processTransactions(transactions) {
 // in main() e.g. when adding salary entries, bills etc
 
 const CATEGORIES = {
-  income: "Income",
+  salary: "Salary",
+  otherIncome: "Other Income",
   bills: "Bills and Services",
   home: "Home",
   shopping: "Shopping",

@@ -39,5 +39,6 @@ router.post("/dashboard", dashboardController.getDashboard);
 
 router.post("/projections", projectionController.getProjections);
 router.post("/projections/create", projectionController.createProjectedChange);
+router.post("/projections/changes", projectionController.getProjectedChanges);
 
 export default router;

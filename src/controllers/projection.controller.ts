@@ -40,10 +40,10 @@ async function getProjections(req: Request, res: Response) {
       // Get userId of user and all linked users
       const userIds = await UserModel.getUserIds(userId);
 
-      // Get dateRange (with startDate and endDate) to query db for the average
+      // Get dateRangeForAvgCalc (with startDate and endDate) to query db for the average
       // endDate = first day of the current month | startDate first day of month 3 months ago
-      // Current dateRange = 3 months
-      const dateRange = setDateRange();
+      // Current dateRangeForAvgCalc = 3 months
+      const dateRangeForAvgCalc = dateRangeFromCurrentMonthIntoPast(3);
 
       // TYPES: get average for base projections (avg value for each type, without projectedChanges)
       let typeAverages = { income: 0, expense: 0 };
@@ -52,7 +52,7 @@ async function getProjections(req: Request, res: Response) {
           const average = await ProjectionModel.getAverageByType(
             userIds,
             type,
-            dateRange
+            dateRangeForAvgCalc
           );
           typeAverages = { ...typeAverages, [type]: average };
         })
@@ -65,7 +65,7 @@ async function getProjections(req: Request, res: Response) {
           const average = await ProjectionModel.getAverageByCategory(
             userIds,
             type,
-            dateRange
+            dateRangeForAvgCalc
           );
           categoryAverages = { ...categoryAverages, [type]: average };
         })
@@ -80,7 +80,7 @@ async function getProjections(req: Request, res: Response) {
       // SAVINGS: get total savings since joining
       // set start value depending on diff in months from current months
       let totalSinceJoining = 1000000;
-      const diffQueriedMonthCurrentMonth = monthsDifference(date);
+      const diffQueriedMonthCurrentMonth = monthsDiffFromCurrentMonth(date);
       totalSinceJoining =
         totalSinceJoining +
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
@@ -121,39 +121,66 @@ async function createProjectedChange(req: Request, res: Response) {
   }
 }
 
+async function getProjectedChanges(req: Request, res: Response) {
+  try {
+    console.log("🎯 called controller getProjectedChanges");
+    const { userId, date } = req.body;
+    // Get userId of user and all linked users
+    const userIds = await UserModel.getUserIds(userId);
+    const dateRangeProjectedChanges = dateRangeFromStartDate(date, 12);
+    console.log("🎯 dateRangeProjectedChanges", dateRangeProjectedChanges);
+    const projectedChanges =
+      await ProjectionModel.findProjectedChangesByDateRange(
+        userIds,
+        dateRangeProjectedChanges
+      );
+    console.log("🎯 projectedChanges", projectedChanges);
+    res.status(200).send(projectedChanges);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not find projected changes");
+  }
+}
+
 //----------------------------------------------------------------
 // HELPER FUNCTIONS
 //----------------------------------------------------------------
 
-// Returns startDate & endDate of a dateRange
+// Returns startDate & endDate of a dateRange that ends in current month
 // endDate = first day of the current month
-// startDate = first day of the month, 3 months ago
-function setDateRange() {
+// startDate = first day of the month, rangeInMonths months ago
+function dateRangeFromCurrentMonthIntoPast(rangeInMonths: number) {
   const today = new Date();
-
   const endDate = moment(today).startOf("month").toISOString();
+  const startDate = moment(endDate)
+    .subtract(rangeInMonths, "months")
+    .toISOString();
+  return { startDate, endDate };
+}
 
-  const startDate = moment(endDate).subtract(3, "months").toISOString();
-
+// Returns startDate & endDate of a dateRange that starts with startDate in arguments
+// startDate = first day of the month given in arguments
+// endDate = first day of the month, rangeInMonths months into the future
+function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
+  startDate = moment(startDate).startOf("month").toISOString();
+  const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
   return { startDate, endDate };
 }
 
 // Returns difference, in months, between the queried date
 // and the current month
-function monthsDifference(date: string) {
+function monthsDiffFromCurrentMonth(date: string) {
   const today = new Date();
-
   var currentMonth = moment(today);
   var queriedMonth = moment(date);
-
-  const monthsDifference = queriedMonth.diff(currentMonth, "months");
-
-  return monthsDifference;
+  const monthsDiffFromCurrentMonth = queriedMonth.diff(currentMonth, "months");
+  return monthsDiffFromCurrentMonth;
 }
 
 const projectionController = {
   getProjections,
   createProjectedChange,
+  getProjectedChanges,
 };
 
 export default projectionController;
