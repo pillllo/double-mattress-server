@@ -1,5 +1,7 @@
 import prisma from "./db";
 import { UserId } from "../types/id";
+import { v4 as uuid } from "uuid";
+import { ProjectedChange, User } from ".prisma/client";
 
 type DateRange = {
   startDate: string;
@@ -12,7 +14,7 @@ async function getAverageByType(
   dateRange: DateRange
 ) {
   try {
-    // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
+    // RETRIEVE AVERAGE THROUGH PRISMA AGGREGATE
     const aggregations = await prisma.transaction.aggregate({
       _avg: {
         amount: true,
@@ -45,7 +47,7 @@ async function getAverageByCategory(
   dateRange: DateRange
 ) {
   try {
-    // RETRIEVE AVERAGE _______ THROUGH PRISMA AGGREGATE
+    // RETRIEVE AVERAGE THROUGH PRISMA AGGREGATE
     const aggregations = await prisma.transaction.aggregate({
       _avg: {
         amount: true,
@@ -72,21 +74,42 @@ async function getAverageByCategory(
   }
 }
 
-// savingsCumulative
+async function createProjectedChange(projectedChangeData: ProjectedChange) {
+  try {
+    const newProjectedChange = await prisma.projectedChange.create({
+      data: { ...projectedChangeData, id: uuid() },
+    });
+    return newProjectedChange;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
 
-// TRANSACTIONS ONLY - NO PROJECTIONS
+async function findProjectedChangesByDateRange(
+  userIds: UserId[] | undefined,
+  dateRange: DateRange
+) {
+  try {
+    const projectedChanges = prisma.projectedChange.findMany({
+      where: {
+        userId: {
+          in: userIds,
+        },
+        date: {
+          gte: dateRange.startDate,
+          lt: dateRange.endDate,
+        },
+      },
+    });
+    return projectedChanges;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
 
-// AVERAGES
-// Get average of all relevant transactions (by date & type)
-
-// savings
-
-// types
-//   income
-//   expenses
-// categories
-//   rent
-//   ...
-//   others
-
-export default { getAverageByType, getAverageByCategory };
+export default {
+  getAverageByType,
+  getAverageByCategory,
+  createProjectedChange,
+  findProjectedChangesByDateRange,
+};

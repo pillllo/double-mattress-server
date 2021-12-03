@@ -41,3 +41,17 @@ model TransactionAggregate {
   savingsForPeriod           Int
   cumulativeSavingsSinceJoin BigInt
 }
+
+model ProjectedChange {
+  id          String   @id @unique
+  type        String
+  userId      String
+  amount      Int
+  currency    String   @default("EUR")
+  category    String
+  date        DateTime
+  description String   @db.VarChar(255)
+  includeAvg  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
