@@ -2,24 +2,25 @@ import prisma from "./db";
 import { v4 as uuid } from "uuid";
 
 import UserModel from "../models/user.model";
+
 import Transaction from "../types/transaction";
 
 // TODO: limit number of transactions
-async function getTransactions(userId: string, from?: Date, to?: Date) {
+
+async function getTransactionsBetween(userId: string, from: Date, to: Date) {}
+
+async function getAllTransactions(userId: string) {
   try {
-    console.log("transaction.model.,getTransactions()");
-    const userIds = await UserModel.getUserIds(userId);
+    console.log("transaction.model.getAllTransactions()");
     const results = await prisma.transaction.findMany({
-      where: {
-        userId: {
-          in: userIds,
-        },
-      },
+      where: { userId: userId },
+      orderBy: { date: "asc" },
     });
     console.log(`Found ${results.length} records`);
     return results;
   } catch (err) {
     console.error("ERROR: ", err);
+    return [];
   }
 }
 
@@ -43,7 +44,10 @@ async function createTransaction(
   }
 }
 
-export default {
-  getTransactions,
+const TransactionModel = {
+  getTransactionsBetween,
+  getAllTransactions,
   createTransaction,
 };
+
+export default TransactionModel;
