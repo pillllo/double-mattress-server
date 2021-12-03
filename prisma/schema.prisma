@@ -39,7 +39,7 @@ model TransactionAggregate {
   incomeForPeriod            Int
   expensesForPeriod          Int
   savingsForPeriod           Int
-  cumulativeSavingsSinceJoin BigInt
+  cumulativeSavingsSinceJoin Int
 }
 
 model ProjectedChange {

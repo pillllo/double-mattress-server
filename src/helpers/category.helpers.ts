@@ -24,3 +24,17 @@ export function getCategoryFromKey(key: string) {
 export function getKeyFromCategoryName(catName: string) {
   return CATEGORY_KEYS[catName];
 }
+
+export function getAllCategoryKeys() {
+  return Object.keys(CATEGORIES);
+}
+
+export function getIncomeCategoryKeys() {
+  return ["salary", "otherIncome"];
+}
+
+export function getExpenseCategoryKeys() {
+  return Object.keys(CATEGORIES).filter((key) => {
+    return key !== "salary" && key !== "otherIncome";
+  });
+}
