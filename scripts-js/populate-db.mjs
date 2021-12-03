@@ -107,7 +107,7 @@ async function processTransactions(transactions) {
       const tResult = await axios.post(`${SERVER_URL}/transactions/create`, t);
       if (!tResult.data) throw new Error("transaction create error");
     } catch (err) {
-      errors.push(t);
+      errors.push(err);
       console.error(err);
       console.error("ERROR: total errors: ", errors.length);
     }
@@ -136,7 +136,7 @@ const CATEGORIES = {
 // change these freely to alter script behaviour
 const SERVER_URL = "http://localhost:6666";
 // const SERVER_URL = "http://localhost:3001";
-const MONTHS_TO_GENERATE = 4;
+const MONTHS_TO_GENERATE = 6;
 const USER_1_NAME = "Annie";
 const USER_2_NAME = "Ben";
 
@@ -170,13 +170,13 @@ const USER_2_NAME = "Ben";
       .map((_, idx) => monthNow - idx);
 
     [user1, user2].forEach((user) => {
-      const { userId, firstName } = user;
+      const { userId } = user;
       const userTransactions = [];
       // these don't change much from month to month, fix them now
-      const salary = random(2000, 3000);
-      const elecBill = random(80, 110);
-      const gasBill = random(60, 90);
-      const waterBill = random(2000, 3000);
+      const salary = random(3200, 3500);
+      const elecBill = random(80, 90);
+      const gasBill = random(60, 80);
+      const waterBill = random(60, 70);
 
       // function declared here to make use of user data in closure
       const createTransaction = (day, month, amount, category, description) => {
@@ -235,7 +235,7 @@ const USER_2_NAME = "Ben";
         userTransactions.push(waterT);
 
         // random transactions for the month
-        let numRandomTransactions = random(70, 100);
+        let numRandomTransactions = random(70, 90);
         for (let i = 0; i <= numRandomTransactions; i += 1) {
           const categoriesNoSalary = { ...CATEGORIES };
           delete categoriesNoSalary.salary;
@@ -244,7 +244,7 @@ const USER_2_NAME = "Ben";
           const randomTransaction = createTransaction(
             random(1, getDaysInMonth(yearNow, month)),
             month,
-            random(5, 120),
+            random(5, 102),
             category,
             description
           );

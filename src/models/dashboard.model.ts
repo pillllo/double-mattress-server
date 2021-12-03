@@ -37,6 +37,7 @@ RESPONSE
 
 async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   try {
+    console.time("getDashboardData");
     console.log("dashboard.model.getDashboardData()");
     console.log(userIds);
     console.log(`desiredDate: ${desiredDate.toISOString()}`);
@@ -45,14 +46,18 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
     const desiredMonth = desiredDate.getMonth();
     // ask history model if we have any previous months
     // will need them regardless
-    const aggregates = {};
-    userIds.forEach((userId) => {
-      const previousMonth = AggregatesModel.getAggregateForMonth(
+    const aggregates = [];
+    userIds.forEach(async (userId) => {
+      const previousMonth = await AggregatesModel.getAggregateForMonth(
         userId,
         desiredDate
       );
+      aggregates.push(previousMonth);
     });
     // get transactions for current month
+
+    // compile response
+    console.timeEnd("getDashboardData");
   } catch (err) {
     console.error("ERROR: ", err);
   }

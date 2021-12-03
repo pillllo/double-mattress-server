@@ -13,6 +13,8 @@ function createTransactionAggregate(
   categs: CategoryTotals,
   previousTransAgg: any
 ) {
+  console.log("createTransactionAggregate()");
+  console.log(categs);
   const incomeForPeriod = categs.salary + categs.otherIncome;
   const totalForPeriod = Object.values(categs).reduce((prev, current) => {
     return prev + current;
@@ -37,7 +39,6 @@ function createTransactionAggregate(
 }
 
 async function generateMissingAggregates(userId: UserId) {
-  console.time("generateMissingAggregates");
   try {
     console.log("AggregatesModel.generateAggregates()");
     // get all aggregates for user
@@ -57,8 +58,9 @@ async function generateMissingAggregates(userId: UserId) {
     curMonth = getMonthStart(curMonth);
     nextMonth = getMonthStart(nextMonth);
     let nextMonthStartTime = nextMonth.getTime();
+    // start iterating transactions
     for (let i = 0; i < transactions.length; i += 1) {
-      console.log(`processing transaction ${i} of ${transactions.length}`);
+      // console.log(`processing transaction ${i} of ${transactions.length}`);
       const tr = transactions[i];
       const trDate = new Date(tr.date);
       const trTime = trDate.getTime();
@@ -76,6 +78,7 @@ async function generateMissingAggregates(userId: UserId) {
           categoryTotals,
           lastTransAgg
         );
+        console.log(transAgg);
         await prisma.transactionAggregate.create({ data: transAgg });
         // reset and prepare for next cycle - advance months
         lastTransAgg = transAgg;
@@ -86,7 +89,6 @@ async function generateMissingAggregates(userId: UserId) {
         categoryTotals = {};
       }
     }
-    console.timeEnd("generateMissingAggregates");
   } catch (err) {
     console.error("ERROR: ", err);
   }
@@ -106,11 +108,11 @@ async function getAllAggregates(userId: UserId) {
 }
 
 async function getAggregateForMonth(userId: UserId, dateOfInterest: Date) {
-  // monthOfInterest marks the last month in returned data set
+  // dateOfInterest marks the last month in returned data set
   // count all records we have to calculate new average
   try {
-    console.log("AggregatesModel.getAggregateForMonth()");
-    const monthAgg = await prisma.transactionAggregate.findFirst({
+    console.log("AggregatesModel.getAggregateForMonth() for userId: ", userId);
+    let monthAgg = await prisma.transactionAggregate.findFirst({
       where: {
         userId: userId,
         month: dateOfInterest.getMonth() + 1,
@@ -119,10 +121,19 @@ async function getAggregateForMonth(userId: UserId, dateOfInterest: Date) {
     });
     if (!monthAgg) {
       await generateMissingAggregates(userId);
+      // TODO: 2x same DB call, refactor
+      monthAgg = await prisma.transactionAggregate.findFirst({
+        where: {
+          userId: userId,
+          month: dateOfInterest.getMonth() + 1,
+          year: dateOfInterest.getFullYear(),
+        },
+      });
     }
-    return [];
+    return monthAgg;
   } catch (err) {
     console.error("ERROR: ", err);
+    return null;
   }
 }
 

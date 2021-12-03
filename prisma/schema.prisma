@@ -39,5 +39,5 @@ model TransactionAggregate {
   incomeForPeriod            Int
   expensesForPeriod          Int
   savingsForPeriod           Int
-  cumulativeSavingsSinceJoin Int
+  cumulativeSavingsSinceJoin BigInt
 }
