@@ -12,8 +12,10 @@ type TransactionAggregate = {
   expensesForPeriod: number;
   savingsForPeriod: number;
   cumulativeSavingsSinceJoin: number;
-  avgMonthlySavingsSinceJoin: number;
-  monthsSinceJoin: number;
 };
+
+// TODO: descoped
+// avgMonthlySavingsSinceJoin: number;
+// monthsSinceJoin: number;
 
 export default TransactionAggregate;
