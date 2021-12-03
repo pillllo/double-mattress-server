@@ -7,7 +7,34 @@ import Transaction from "../types/transaction";
 
 // TODO: limit number of transactions
 
-async function getTransactionsBetween(userId: string, from: Date, to: Date) {}
+async function getTransactionsBetween(userId: string, from: Date, to: Date) {
+  try {
+    console.log("transaction.model.getTransactionsBetween()");
+    console.log(`from: ${from.toISOString()} to: ${to.toISOString()}`);
+    const results = await prisma.transaction.findMany({
+      where: {
+        userId: userId,
+        date: {
+          gte: from,
+          lte: to,
+        },
+      },
+      orderBy: { date: "asc" },
+    });
+    console.log(`Found ${results.length} records`);
+    const first = results[0];
+    const last = results[results.length - 1];
+    console.log("returned results set follows with dates...");
+    console.log(
+      `first: ${first.date.toISOString()} last: ${last.date.toISOString()}`
+    );
+    console.log();
+    return results;
+  } catch (err) {
+    console.error("ERROR: ", err);
+    return [];
+  }
+}
 
 async function getAllTransactions(userId: string) {
   try {
