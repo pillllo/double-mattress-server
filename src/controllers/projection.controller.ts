@@ -3,7 +3,7 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
-import Transaction from "../types/transaction";
+import { ProjectedChange } from ".prisma/client";
 moment().format();
 
 const categories = [
@@ -77,16 +77,18 @@ async function getProjections(req: Request, res: Response) {
         totalSinceJoining +
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
 
+      // [{}, {}, {}]
+
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
       let projections: Projection[] = [];
-
       let monthCounter = 0;
       let month = moment(date).startOf("month").toISOString();
       while (monthCounter <= 11) {
         savings = { ...savings, totalSinceJoining };
         typeAverages = { ...typeAverages };
         categoryAverages = { ...categoryAverages };
-        let projectedChanges: Transaction[] = [];
+        let projectedChanges: ProjectedChange[] = [];
+
         const monthlyData = {
           savings,
           typeAverages,
@@ -100,21 +102,30 @@ async function getProjections(req: Request, res: Response) {
         monthCounter++;
       }
 
+      // ADD projectedChanges for the dateRange of projections
       const projectedChanges = await getProjectedChanges(userId, date);
-
       if (projectedChanges && projectedChanges.length > 0) {
         for (let i = 0; i < projections.length; i++) {
-          let monthProjections = projections[i].month;
+          let projection = projections[i];
+          let monthProjection = projections[i].month;
 
           for (let j = 0; j < projectedChanges.length; j++) {
-            let monthProjectedChange = projectedChanges[j].date;
+            let projectedChange = projectedChanges[j];
+
             if (
-              moment(monthProjections).isSame(monthProjectedChange, "month")
+              moment(projection.month).isSame(projectedChange.date, "month")
             ) {
-              let amountProjectedChanges = projectedChanges[j].amount;
-              projections[i].typeAverages.expense += amountProjectedChanges;
-              projections[i].savings.monthlyAverage3Months +=
-                amountProjectedChanges;
+              let type = projectedChange.type;
+              projection.typeAverages[type] += projectedChange.amount;
+              if (type === "expense") {
+                projection.savings.monthlyAverage3Months -=
+                  projectedChange.amount;
+                projection.savings.totalSinceJoining -= projectedChange.amount;
+              } else {
+                projection.savings.monthlyAverage3Months +=
+                  projectedChange.amount;
+                projection.savings.totalSinceJoining += projectedChange.amount;
+              }
             }
           }
         }
