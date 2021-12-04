@@ -8,12 +8,12 @@ type Projection = {
   projectedChanges: ProjectedChange[];
 };
 
-type Savings = {
-  monthlyAverage3Months: number;
+export type Savings = {
+  monthlySavings: number;
   totalSinceJoining: number;
 };
 
-type TypeAverages = {
+export type TypeAverages = {
   income: number;
   expense: number;
   [key: string]: number;
