@@ -19,15 +19,16 @@ type TypeAverages = {
   [key: string]: number;
 };
 
-type CategoryAverages = {
-  Salary?: number;
-  "Other Income"?: number;
-  "Bills and Services"?: number;
-  Home?: number;
-  Shopping?: number;
-  Entertainment?: number;
-  "Eating Out"?: number;
-  Others?: number;
+export type CategoryAverages = {
+  Salary: number;
+  "Other Income": number;
+  "Bills and Services": number;
+  Home: number;
+  Shopping: number;
+  Entertainment: number;
+  "Eating Out": number;
+  Others: number;
+  [key: string]: number;
 };
 
 export default Projection;
