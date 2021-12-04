@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
-import Projection from "../types/projection";
+import Projection, { CategoryAverages } from "../types/projection";
 import moment from "moment";
 import { ProjectedChange } from ".prisma/client";
 moment().format();
@@ -50,7 +50,17 @@ async function getProjections(req: Request, res: Response) {
       );
 
       // CATEGORIES: get average for base projections (avg value for each category, without projectedChanges)
-      let categoryAverages = {};
+      let categoryAverages = {
+        Salary: 0,
+        "Other Income": 0,
+        "Bills and Services": 0,
+        Home: 0,
+        Shopping: 0,
+        Entertainment: 0,
+        "Eating Out": 0,
+        Others: 0,
+      };
+
       await Promise.all(
         categories.map(async (type) => {
           let average = await ProjectionModel.getAverageByCategory(
@@ -97,49 +107,13 @@ async function getProjections(req: Request, res: Response) {
           projectedChanges,
         };
         projections.push(monthlyData);
-        // totalSinceJoining += monthlyAverage3Months;
         month = moment(month).add(1, "months").toISOString();
         monthCounter++;
       }
 
-      // ADD projectedChanges for the dateRange of projections
+      // ADD PROJECTED CHANGES (one-off) to the base projections for the dateRange of projections
       const projectedChanges = await getProjectedChanges(userId, date);
-      if (projectedChanges && projectedChanges.length > 0) {
-        for (let i = 0; i < projections.length; i++) {
-          let projection = projections[i];
-
-          // UPDATE cumulative savings (totalSinceJoining) based on change in monthly saving in previous month
-          // take previous projection's monthly savings rate
-          // add to current base rate savings since joining
-          let previousProjection: Projection | null =
-            i > 0 ? projections[i - 1] : null;
-          if (previousProjection)
-            projection.savings.totalSinceJoining =
-              previousProjection.savings.totalSinceJoining +
-              previousProjection.savings.monthlyAverage3Months;
-
-          // UPDATE monthly saving, income & expense if any projectedChange falls into this month
-          for (let j = 0; j < projectedChanges.length; j++) {
-            let projectedChange = projectedChanges[j];
-            if (
-              moment(projection.month).isSame(projectedChange.date, "month")
-            ) {
-              let type = projectedChange.type;
-              projection.typeAverages[type] += projectedChange.amount;
-              if (type === "expense") {
-                projection.savings.monthlyAverage3Months -=
-                  projectedChange.amount;
-              } else {
-                projection.savings.monthlyAverage3Months +=
-                  projectedChange.amount;
-              }
-              projection.projectedChanges.push(projectedChange);
-            }
-          }
-        }
-      }
-
-      for (let i = 1; i < projections.length; i++) {}
+      if (projectedChanges) updateProjections(projections, projectedChanges);
 
       res.status(200).send(projections);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
@@ -152,11 +126,13 @@ async function getProjections(req: Request, res: Response) {
 // Create a new projectedChange in the db
 async function createProjectedChange(req: Request, res: Response) {
   try {
-    const projectedChangeData = req.body;
+    let { projectedChange, projections } = req.body;
     const newProjectedChange = await ProjectionModel.createProjectedChange(
-      projectedChangeData
+      projectedChange
     );
-    res.status(201).send(newProjectedChange);
+    const projectedChanges = [projectedChange];
+    const updatedProjections = updateProjections(projections, projectedChanges);
+    res.status(201).send(updatedProjections);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not create projected change");
@@ -178,28 +154,6 @@ async function getProjectedChanges(userId: string, date: string) {
     return projectedChanges;
   } else return null;
 }
-
-// async function getProjectedChanges(req: Request, res: Response) {
-//   try {
-//     const { userId, date } = req.body;
-//     // Checks if user exists
-//     const user = await UserModel.getUser(userId);
-//     if (user) {
-//       // Get userId of user and all linked users
-//       const userIds = await UserModel.getUserIds(userId);
-//       const dateRangeProjectedChanges = dateRangeFromStartDate(date, 12);
-//       const projectedChanges =
-//         await ProjectionModel.findProjectedChangesByDateRange(
-//           userIds,
-//           dateRangeProjectedChanges
-//         );
-//       res.status(200).send(projectedChanges);
-//     } else res.status(400).send(`No user profile found for this userId`);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(400).send("Could not find projected changes");
-//   }
-// }
 
 //----------------------------------------------------------------
 // HELPER FUNCTIONS
@@ -235,6 +189,47 @@ function monthsDiffFromCurrentMonth(date: string) {
   var queriedMonth = moment(date);
   const monthsDiffFromCurrentMonth = queriedMonth.diff(currentMonth, "months");
   return monthsDiffFromCurrentMonth;
+}
+
+function updateProjections(
+  projections: Projection[],
+  projectedChanges: ProjectedChange[]
+) {
+  if (projectedChanges.length > 0) {
+    for (let i = 0; i < projections.length; i++) {
+      let projection = projections[i];
+
+      // UPDATE cumulative savings (totalSinceJoining) based on change in monthly saving in previous month
+      // take previous projection's monthly savings rate
+      // add to current base rate savings since joining
+      let previousProjection: Projection | null =
+        i > 0 ? projections[i - 1] : null;
+      if (previousProjection)
+        projection.savings.totalSinceJoining =
+          previousProjection.savings.totalSinceJoining +
+          previousProjection.savings.monthlyAverage3Months;
+
+      // UPDATE monthly saving, income & expense if any projectedChange falls into this month
+      for (let j = 0; j < projectedChanges.length; j++) {
+        let projectedChange = projectedChanges[j];
+        if (moment(projection.month).isSame(projectedChange.date, "month")) {
+          let type = projectedChange.type;
+          let category = projectedChange.category;
+          projection.typeAverages[type] += projectedChange.amount;
+          projection.categoryAverages[category] += projectedChange.amount;
+
+          if (type === "expense") {
+            projection.savings.monthlyAverage3Months -= projectedChange.amount;
+          } else {
+            projection.savings.monthlyAverage3Months += projectedChange.amount;
+          }
+
+          projection.projectedChanges.push(projectedChange);
+        }
+      }
+    }
+  }
+  return projections;
 }
 
 const projectionController = {
