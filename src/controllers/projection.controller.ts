@@ -110,6 +110,7 @@ async function getProjections(req: Request, res: Response) {
         for (let i = 0; i < projections.length; i++) {
           let projection = projections[i];
 <<<<<<< HEAD
+<<<<<<< HEAD
           let nextProjection: Projection | null;
           if (i < projections.length - 1) {
             nextProjection = projections[i + 1];
@@ -118,12 +119,17 @@ async function getProjections(req: Request, res: Response) {
           for (let j = 0; j < projectedChanges.length; j++) {
             let projectedChange = projectedChanges[j];
 =======
+=======
+>>>>>>> main
           let monthProjection = projections[i].month;
 
           for (let j = 0; j < projectedChanges.length; j++) {
             let projectedChange = projectedChanges[j];
 
+<<<<<<< HEAD
 >>>>>>> dev
+=======
+>>>>>>> main
             if (
               moment(projection.month).isSame(projectedChange.date, "month")
             ) {
@@ -133,6 +139,7 @@ async function getProjections(req: Request, res: Response) {
                 projection.savings.monthlyAverage3Months -=
                   projectedChange.amount;
 <<<<<<< HEAD
+<<<<<<< HEAD
               } else {
                 projection.savings.monthlyAverage3Months +=
                   projectedChange.amount;
@@ -141,13 +148,18 @@ async function getProjections(req: Request, res: Response) {
                 nextProjection.savings.totalSinceJoining +=
                   projectedChange.amount;
 =======
+=======
+>>>>>>> main
                 projection.savings.totalSinceJoining -= projectedChange.amount;
               } else {
                 projection.savings.monthlyAverage3Months +=
                   projectedChange.amount;
                 projection.savings.totalSinceJoining += projectedChange.amount;
               }
+<<<<<<< HEAD
 >>>>>>> dev
+=======
+>>>>>>> main
             }
           }
         }
