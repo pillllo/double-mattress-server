@@ -16,6 +16,8 @@ import { UserId } from "../types/id";
 //----------------------------------------------------------------
 
 function _mergeObjectNumericValues(sources: any, destination: any) {
+  // combine any numeric values from all aggregate objects
+  // works for any number of aggregates
   sources.forEach((source: any) => {
     Object.keys(source).forEach((key) => {
       const value = source[key];
@@ -36,9 +38,9 @@ function _getBreakdownByUser(
   keysOfInterest.forEach((key) => {
     sources.forEach((source: any) => {
       const keyExists = destination.hasOwnProperty(key);
-      // add desired key, and initialise nested value to an object if not preset
+      // add desired key, and initialise nested value to empty object if not preset
+      // then add nested userId and value for that user
       destination[key] = keyExists ? destination[key] : {};
-      // add nested userId and value for that user
       destination[key][source.userId] = source.categoriesForPeriod[key];
     });
   });
@@ -47,10 +49,7 @@ function _getBreakdownByUser(
 
 function _compileDashboardData(aggregates: any, transactions: any) {
   console.log("compileDashboardData()");
-  // combine any numeric values from all aggregate objects
-  // works for any number of aggregates
   const merged = _mergeObjectNumericValues(aggregates, {});
-  // return values
   const dashboardData = {
     categoryTotals: _getBreakdownByUser(
       aggregates,
@@ -66,6 +65,10 @@ function _compileDashboardData(aggregates: any, transactions: any) {
   };
   return dashboardData;
 }
+
+//----------------------------------------------------------------
+// MODEL
+//----------------------------------------------------------------
 
 async function getDashboardData(userIds: UserId[], desiredDate: Date) {
   try {
@@ -94,7 +97,6 @@ async function getDashboardData(userIds: UserId[], desiredDate: Date) {
         return tr;
       })
     );
-    // compile and send response
     const compiled = _compileDashboardData(aggregates, transactions);
     return compiled;
   } catch (err) {
