@@ -79,8 +79,6 @@ async function getProjections(req: Request, res: Response) {
         totalSinceJoining +
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
 
-      // [{}, {}, {}]
-
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
       let projections: Projection[] = [];
       let monthCounter = 0;
