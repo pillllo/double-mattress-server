@@ -70,14 +70,14 @@ async function getProjections(req: Request, res: Response) {
 
       // TODO: get from historical table
       // SAVINGS: get total savings since joining
-      // set start value depending on diff in months from current months
       let totalSinceJoining = 1000000;
+      // set start value depending on diff in months from current months
+      // calculate number of months between queried month and current month
       const diffQueriedMonthCurrentMonth = monthsDiffFromCurrentMonth(date);
+      // get totalSinceJoining by multiplying months since since current month * average savings / months
       totalSinceJoining =
         totalSinceJoining +
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
-
-      // [{}, {}, {}]
 
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
       let projections: Projection[] = [];
@@ -107,11 +107,13 @@ async function getProjections(req: Request, res: Response) {
       if (projectedChanges && projectedChanges.length > 0) {
         for (let i = 0; i < projections.length; i++) {
           let projection = projections[i];
-          let monthProjection = projections[i].month;
+          let nextProjection: Projection | null;
+          if (i < projections.length - 1) {
+            nextProjection = projections[i + 1];
+          } else nextProjection = null;
 
           for (let j = 0; j < projectedChanges.length; j++) {
             let projectedChange = projectedChanges[j];
-
             if (
               moment(projection.month).isSame(projectedChange.date, "month")
             ) {
@@ -120,12 +122,13 @@ async function getProjections(req: Request, res: Response) {
               if (type === "expense") {
                 projection.savings.monthlyAverage3Months -=
                   projectedChange.amount;
-                projection.savings.totalSinceJoining -= projectedChange.amount;
               } else {
                 projection.savings.monthlyAverage3Months +=
                   projectedChange.amount;
-                projection.savings.totalSinceJoining += projectedChange.amount;
               }
+              if (nextProjection)
+                nextProjection.savings.totalSinceJoining +=
+                  projectedChange.amount;
             }
           }
         }
