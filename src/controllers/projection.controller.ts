@@ -83,7 +83,14 @@ async function getProjections(req: Request, res: Response) {
       let month = moment(date).startOf("month").toISOString();
       while (monthCounter <= 11) {
         savings = { ...savings, totalSinceJoining };
-        const monthlyData = { savings, typeAverages, categoryAverages, month };
+        typeAverages = { ...typeAverages };
+        categoryAverages = { ...categoryAverages };
+        const monthlyData = {
+          savings,
+          typeAverages,
+          categoryAverages,
+          month,
+        };
         projections.push(monthlyData);
         totalSinceJoining += monthlyAverage3Months;
         month = moment(month).add(1, "months").toISOString();
@@ -91,10 +98,11 @@ async function getProjections(req: Request, res: Response) {
       }
 
       const projectedChanges = await getProjectedChanges(userId, date);
-      console.log("🎯 projections", projections[10].typeAverages.expense);
+
       if (projectedChanges && projectedChanges.length > 0) {
         for (let i = 0; i < projections.length; i++) {
           let monthProjections = projections[i].month;
+
           for (let j = 0; j < projectedChanges.length; j++) {
             let monthProjectedChange = projectedChanges[j].date;
             if (
@@ -108,8 +116,6 @@ async function getProjections(req: Request, res: Response) {
           }
         }
       }
-      // console.log("🎯 projections", projections[10].typeAverages.expense);
-      console.log("🎯 projections", projections);
       res.status(200).send(projections);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
   } catch (error) {
