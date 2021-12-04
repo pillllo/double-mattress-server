@@ -3,7 +3,6 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
-import { ECKeyPairKeyObjectOptions } from "crypto";
 import Transaction from "../types/transaction";
 moment().format();
 
