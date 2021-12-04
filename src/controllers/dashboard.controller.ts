@@ -6,6 +6,7 @@ import { getSanitisedDate } from "../helpers/date.helpers";
 
 async function getDashboard(req: Request, res: Response) {
   try {
+    console.time("DashboardController.getDashboard");
     const { userId, date } = req.body;
     const allUserIds = await UserModel.getUserIds(userId);
     const desiredDate = getSanitisedDate(date);
@@ -16,6 +17,7 @@ async function getDashboard(req: Request, res: Response) {
       allUserIds,
       desiredDate
     );
+    console.timeEnd("DashboardController.getDashboard");
     res.status(200).send(dashboardData);
   } catch (err) {
     console.error(err);
