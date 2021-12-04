@@ -1,9 +1,7 @@
 import prisma from "./db";
 import { v4 as uuid } from "uuid";
 
-import UserModel from "../models/user.model";
-
-import Transaction from "../types/transaction";
+import { TransactionId } from "../types/id";
 
 // TODO: limit number of transactions
 
@@ -43,7 +41,6 @@ async function getAllTransactions(userId: string) {
       where: { userId: userId },
       orderBy: { date: "asc" },
     });
-    console.log(`Found ${results.length} records`);
     return results;
   } catch (err) {
     console.error("ERROR: ", err);
@@ -53,7 +50,7 @@ async function getAllTransactions(userId: string) {
 
 async function createTransaction(
   transactionData: any
-): Promise<Transaction | null> {
+): Promise<TransactionId | null> {
   console.log("transaction.model.createTransaction()");
   try {
     const transaction = { ...transactionData, transactionId: uuid() };
@@ -63,8 +60,7 @@ async function createTransaction(
         transactionId: true,
       },
     });
-    // Send back whole transaction incl. transactionId so that client knows the transaction's id
-    return transaction;
+    return result.transactionId;
   } catch (err) {
     console.error("ERROR: ", err);
     return null;

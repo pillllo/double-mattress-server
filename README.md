@@ -135,6 +135,64 @@ Sample request:
 
 Returns data for the deleted `User`.
 
+# Get dashboard for user & any linked users
+
+## `POST /dashboard`
+
+Get dashboard data for a user and their linked users, namely:
+
+-
+- a list of transactions for the desired month, for the user and any linked users
+
+**Request body**
+
+In the request body send an object with:
+
+- `userId`: a user ID (type: string) for the user you wish to get transaction data for.
+- `date`: an ISO 8601 date string (from `Date.toISOString()`) for any date or time within the month & year you wish to retrieve. In other words, you don't need to set the day / time on the date.
+
+Sample request:
+
+```
+{
+  "userId": "c4f2af8d-d47c-48ab-95f1-20f0a2f54a93",
+  "date": "2021-08-16T04:19:56.119Z"  // will retrieve data for August 2021
+}
+```
+
+**Response body**
+
+Returns an object as follows:
+
+```
+{
+  transactions: [], // unfiltered / unsorted transactions for all users
+  categoryTotals: {
+    home: {
+      USER_A_ID: 456,
+      USER_B_ID: 457,
+    },
+    shopping: 4567,
+    ...
+  },
+  typeTotals: {
+    income: {
+      USER_A_ID: 98456798,
+      USER_B_ID: 93485798,
+    },
+    expenses: {
+     USER_A_ID: 456,
+     USER_B_ID: 457,
+    },
+  savings: {
+    // combined for all linked users
+    currentMonth: 45774,
+    monthlyAverageSinceJoining: 947698,
+    totalSinceJoining: 456987798,
+  }
+}
+```
+
 # Get transactions for a user
 
 ## `POST /transactions`

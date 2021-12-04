@@ -12,7 +12,7 @@ const CATEGORIES: DynamicMap = {
 };
 
 const CATEGORY_KEYS: DynamicMap = {};
-
+// create a reverse map of value/key
 for (const [key, value] of Object.entries(CATEGORIES)) {
   CATEGORY_KEYS[value] = key;
 }
@@ -37,4 +37,8 @@ export function getExpenseCategoryKeys() {
   return Object.keys(CATEGORIES).filter((key) => {
     return key !== "salary" && key !== "otherIncome";
   });
+}
+
+export function getAllCategories() {
+  return CATEGORIES;
 }
