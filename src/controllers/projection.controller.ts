@@ -3,7 +3,7 @@ import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
 import Projection from "../types/projection";
 import moment from "moment";
-import { ECKeyPairKeyObjectOptions } from "crypto";
+import Transaction from "../types/transaction";
 moment().format();
 
 const categories = [
@@ -79,17 +79,20 @@ async function getProjections(req: Request, res: Response) {
 
       // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
       let projections: Projection[] = [];
+
       let monthCounter = 0;
       let month = moment(date).startOf("month").toISOString();
       while (monthCounter <= 11) {
         savings = { ...savings, totalSinceJoining };
         typeAverages = { ...typeAverages };
         categoryAverages = { ...categoryAverages };
+        let projectedChanges: Transaction[] = [];
         const monthlyData = {
           savings,
           typeAverages,
           categoryAverages,
           month,
+          projectedChanges,
         };
         projections.push(monthlyData);
         totalSinceJoining += monthlyAverage3Months;
