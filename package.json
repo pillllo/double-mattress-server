@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "dev": "ENVIRONMENT=development ts-node-dev --respawn --pretty --transpile-only --exit-child src/app.ts",
+    "dev-heroku": "ENVIRONMENT=staging ts-node-dev --respawn --pretty --transpile-only --exit-child src/app.ts",
     "staging": "ENVIRONMENT=staging node build/app.js",
     "start": "ENVIRONMENT=production node build/app.js",
     "postinstall": "tsc"

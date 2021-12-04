@@ -79,7 +79,7 @@ async function getProjections(req: Request, res: Response) {
         totalSinceJoining +
         monthlyAverage3Months * diffQueriedMonthCurrentMonth;
 
-      // ADD TYPE & CATEGORY base projections (without projectedChanges) to each of 12 months
+      // ADD BASE PROJECTIONS (without projectedChanges) to each of 12 months
       let projections: Projection[] = [];
       let monthCounter = 0;
       let month = moment(date).startOf("month").toISOString();
@@ -97,7 +97,7 @@ async function getProjections(req: Request, res: Response) {
           projectedChanges,
         };
         projections.push(monthlyData);
-        totalSinceJoining += monthlyAverage3Months;
+        // totalSinceJoining += monthlyAverage3Months;
         month = moment(month).add(1, "months").toISOString();
         monthCounter++;
       }
@@ -107,11 +107,18 @@ async function getProjections(req: Request, res: Response) {
       if (projectedChanges && projectedChanges.length > 0) {
         for (let i = 0; i < projections.length; i++) {
           let projection = projections[i];
-          let nextProjection: Projection | null;
-          if (i < projections.length - 1) {
-            nextProjection = projections[i + 1];
-          } else nextProjection = null;
 
+          // UPDATE cumulative savings (totalSinceJoining) based on change in monthly saving in previous month
+          // take previous projection's monthly savings rate
+          // add to current base rate savings since joining
+          let previousProjection: Projection | null =
+            i > 0 ? projections[i - 1] : null;
+          if (previousProjection)
+            projection.savings.totalSinceJoining =
+              previousProjection.savings.totalSinceJoining +
+              previousProjection.savings.monthlyAverage3Months;
+
+          // UPDATE monthly saving, income & expense if any projectedChange falls into this month
           for (let j = 0; j < projectedChanges.length; j++) {
             let projectedChange = projectedChanges[j];
             if (
@@ -126,13 +133,14 @@ async function getProjections(req: Request, res: Response) {
                 projection.savings.monthlyAverage3Months +=
                   projectedChange.amount;
               }
-              if (nextProjection)
-                nextProjection.savings.totalSinceJoining +=
-                  projectedChange.amount;
+              projection.projectedChanges.push(projectedChange);
             }
           }
         }
       }
+
+      for (let i = 1; i < projections.length; i++) {}
+
       res.status(200).send(projections);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
   } catch (error) {
