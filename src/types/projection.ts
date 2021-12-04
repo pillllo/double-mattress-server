@@ -1,8 +1,11 @@
+import { ProjectedChange } from ".prisma/client";
+
 type Projection = {
   savings: Savings;
   typeAverages: TypeAverages;
   categoryAverages: CategoryAverages;
   month: string;
+  projectedChanges: ProjectedChange[];
 };
 
 type Savings = {
@@ -13,6 +16,7 @@ type Savings = {
 type TypeAverages = {
   income: number;
   expense: number;
+  [key: string]: number;
 };
 
 type CategoryAverages = {
