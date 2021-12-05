@@ -10,6 +10,7 @@ import Projection, {
 } from "../types/projection";
 import DateRange from "../types/dateRange";
 import { ProjectedChange } from ".prisma/client";
+import projectedChange from "../types/projectedChange";
 
 const categories = [
   "Salary",
@@ -27,96 +28,17 @@ const types = ["income", "expense"];
 // POST /projections
 //----------------------------------------------------------------
 
-// Calculate projection data (object) based on average historical data
+// Calculate currentMonth data (object) based on average historical data
 async function getProjections(req: Request, res: Response) {
   try {
     const { userId, date } = req.body;
-
     // Checks if user exists, if not returns null
     const user = await UserModel.getUser(userId);
-
     if (user) {
-      // Get userId of user and all linked users
-      const userIds = await UserModel.getUserIds(userId);
-
-      // Get dateRangeForAvgCalc (with startDate and endDate) to query db for the average
-      // endDate = first day of the current month | startDate first day of month 3 months ago
-      const dateRangeForAvgCalc = dateRangeFromCurrentMonthIntoPast(3);
-
-      // TYPES: get average for base projections (avg value for each type, without projectedChanges)
-      let typeAverages = { income: 0, expense: 0 };
-      await Promise.all(
-        types.map(async (type) => {
-          let average = await ProjectionModel.getAverageByType(
-            userIds,
-            type,
-            dateRangeForAvgCalc
-          );
-          if (!average) average = 0;
-          typeAverages = { ...typeAverages, [type]: average };
-        })
-      );
-
-      // CATEGORIES: get average for base projections (avg value for each category, without projectedChanges)
-      let categoryAverages = {
-        Salary: 0,
-        "Other Income": 0,
-        "Bills and Services": 0,
-        Home: 0,
-        Shopping: 0,
-        Entertainment: 0,
-        "Eating Out": 0,
-        Others: 0,
-      };
-
-      await Promise.all(
-        categories.map(async (type) => {
-          let average = await ProjectionModel.getAverageByCategory(
-            userIds,
-            type,
-            dateRangeForAvgCalc
-          );
-          if (!average) average = 0;
-          categoryAverages = { ...categoryAverages, [type]: average };
-        })
-      );
-
-      // SAVINGS: calculate monthly savings
-      let savings = { monthlySavings: 0, totalSinceJoining: 0 };
-      const monthlySavings = typeAverages.income - typeAverages.expense;
-      // SAVINGS: get total savings since joining
-      let totalSinceJoining = 1000000;
-      savings = { ...savings, monthlySavings, totalSinceJoining };
-
-      // PROJECTIONS TIMELINE: first day of current month - 12 months from queried date
-      // For how many months should we create projections
-      const monthsInProjections = monthCountProjections(date, 12);
-      // For which dateRange should we create projections
-      const dateRangeOfProjections = dateRangeProjections(date, 12);
-      console.log("🎯 monthsInProj", monthsInProjections);
-      console.log("🎯 dateRangeProj", dateRangeOfProjections);
-
-      // ADD BASE PROJECTIONS: (without projectedChanges) to each of the months
-      const projections = addProjectionsToMonths(
-        monthsInProjections,
-        savings,
-        typeAverages,
-        categoryAverages
-      );
-
-      // PROJECTED CHANGES
-      // Get all projectedChanges for the dateRange of projections
-      const projectedChanges = await getProjectedChanges(
+      const projectionsForQueriedDate = await compileTotalProjections(
         userId,
-        dateRangeOfProjections
+        date
       );
-
-      // Add projectedChanges (one-off) to the base projections for the dateRange of projections
-      if (projectedChanges) updateProjections(projections, projectedChanges);
-
-      const projectionsForQueriedDate = projections.slice(-12);
-      console.log("🎯 ", projectionsForQueriedDate.length);
-      // res.status(200).send(projections);
       res.status(200).send(projectionsForQueriedDate);
     } else res.status(400).send(`No user profile found for userId: ${userId}`);
   } catch (error) {
@@ -130,17 +52,17 @@ async function getProjections(req: Request, res: Response) {
 //----------------------------------------------------------------
 
 // Create a new projectedChange in the db
+// Return updated array of projections
 async function createProjectedChange(req: Request, res: Response) {
   try {
-    let { projectedChange, projections } = req.body;
+    let { projectedChange, projectionsStartDate } = req.body;
     const newProjectedChange = await ProjectionModel.createProjectedChange(
       projectedChange
     );
     if (newProjectedChange) {
-      const projectedChanges = [newProjectedChange];
-      const updatedProjections = updateProjections(
-        projections,
-        projectedChanges
+      const updatedProjections = await compileTotalProjections(
+        projectedChange.userId,
+        projectionsStartDate
       );
       res.status(201).send(updatedProjections);
     } else {
@@ -156,14 +78,105 @@ async function createProjectedChange(req: Request, res: Response) {
 // HELPER FUNCTIONS
 //----------------------------------------------------------------
 
-function addProjectionsToMonths(
+async function compileTotalProjections(userId: string, date: string) {
+  try {
+    // Get userId of user and all linked users
+    const userIds = await UserModel.getUserIds(userId);
+
+    // Get dateRangeForAvgCalc (with startDate and endDate) to query db for the average
+    // endDate = first day of the current month | startDate first day of month 3 months ago
+    const dateRangeForAvgCalc = dateRangeFromCurrentMonthIntoPast(3);
+
+    // TYPES
+    // Get type averages for base projections (avg value for each type, without projectedChanges)
+    let typeAverages = { income: 0, expense: 0 };
+    await Promise.all(
+      types.map(async (type) => {
+        let average = await ProjectionModel.getAverageByType(
+          userIds,
+          type,
+          dateRangeForAvgCalc
+        );
+        if (!average) average = 0;
+        typeAverages = { ...typeAverages, [type]: average };
+      })
+    );
+
+    // CATEGORIES
+    let categoryAverages = {
+      Salary: 0,
+      "Other Income": 0,
+      "Bills and Services": 0,
+      Home: 0,
+      Shopping: 0,
+      Entertainment: 0,
+      "Eating Out": 0,
+      Others: 0,
+    };
+
+    // Get category averages for base projections (avg value for each category, without projectedChanges)
+    await Promise.all(
+      categories.map(async (type) => {
+        let average = await ProjectionModel.getAverageByCategory(
+          userIds,
+          type,
+          dateRangeForAvgCalc
+        );
+        if (!average) average = 0;
+        categoryAverages = { ...categoryAverages, [type]: average };
+      })
+    );
+
+    // SAVINGS
+    // Calculate monthly savings
+    let savings = { monthlySavings: 0, totalSinceJoining: 0 };
+    const monthlySavings = typeAverages.income - typeAverages.expense;
+    // Get total savings since joining
+    let totalSinceJoining = 1000000;
+    savings = { ...savings, monthlySavings, totalSinceJoining };
+
+    // PROJECTIONS TIMELINE (first day of current month - 12 months from queried date)
+    // For how many months should we create projections
+    const monthsInProjections = monthCountProjections(date, 12);
+    // For which dateRange should we create projections
+    const dateRangeOfProjections = dateRangeProjections(date, 12);
+
+    // BASE PROJECTIONS
+    // Add base projections (without projectedChanges) to each of the months
+    const projections = addBaseProjectionsToMonths(
+      monthsInProjections,
+      savings,
+      typeAverages,
+      categoryAverages
+    );
+
+    // PROJECTED CHANGES
+    // Get all projectedChanges for the dateRange of projections
+    const projectedChanges = await getProjectedChanges(
+      userId,
+      dateRangeOfProjections
+    );
+    // Add projectedChanges (one-off) to the base projections
+    if (projectedChanges)
+      addProjectedChangesToProjections(projections, projectedChanges);
+
+    // PROJECTIONS FOR QUERIED DATE
+    // Only keep data for last 12 months (i.e. 12 months from queriedDate)
+    const projectionsForQueriedDate = projections.slice(-12);
+    return projectionsForQueriedDate;
+  } catch (error) {
+    console.error(error);
+    return "Could not get projections";
+  }
+}
+
+function addBaseProjectionsToMonths(
   monthsInProjections: number,
   savings: Savings,
   typeAverages: TypeAverages,
   categoryAverages: CategoryAverages
 ) {
   let projections: Projection[] = [];
-  // let monthCounter = 0;
   let today = new Date();
   let month = moment(today).startOf("month").toISOString();
 
@@ -180,31 +193,33 @@ function addProjectionsToMonths(
       month,
       projectedChanges,
     };
+
     projections.push(monthlyData);
     month = moment(month).add(1, "months").toISOString();
   }
-  // while (monthCounter <= monthsInProjections) {
-  //   savings = { ...savings };
-  //   typeAverages = { ...typeAverages };
-  //   categoryAverages = { ...categoryAverages };
-  //   let projectedChanges: ProjectedChange[] = [];
 
-  //   const monthlyData = {
-  //     savings,
-  //     typeAverages,
-  //     categoryAverages,
-  //     month,
-  //     projectedChanges,
-  //   };
-  //   projections.push(monthlyData);
-  //   month = moment(month).add(1, "months").toISOString();
-  //   monthCounter++;
-  // }
+  // Add cumulative savings (totalSinceJoining) based on monthly data
+  calculateCumulativeSavings(projections);
+
   return projections;
 }
 
+// Calculate cumulative savings (totalSinceJoining)
+// add previous' months monthlySavings rate to previous' months cumulative savings
+function calculateCumulativeSavings(projections: Projection[]) {
+  for (let i = 0; i < projections.length; i++) {
+    let currentMonth = projections[i];
+    let previousMonth: Projection | null = i > 0 ? projections[i - 1] : null;
+    if (previousMonth)
+      currentMonth.savings.totalSinceJoining =
+        previousMonth.savings.totalSinceJoining +
+        previousMonth.savings.monthlySavings;
+  }
+}
+
+// Get all projectedChanges related to the userId and all linked users in a given dateRange
 async function getProjectedChanges(userId: string, dateRange: DateRange) {
-  // Checks if user exists
+  // Checks if user exists, if not returns null
   const user = await UserModel.getUser(userId);
   if (user) {
     // Get userId of user and all linked users
@@ -215,43 +230,45 @@ async function getProjectedChanges(userId: string, dateRange: DateRange) {
   } else return null;
 }
 
-function updateProjections(
+function addProjectedChangesToProjections(
   projections: Projection[],
   projectedChanges: ProjectedChange[]
 ) {
   if (projectedChanges.length > 0) {
     for (let i = 0; i < projections.length; i++) {
-      let projection = projections[i];
+      let currentMonth = projections[i];
 
-      // UPDATE cumulative savings (totalSinceJoining) based on change in monthlySavings saving in previous month
-      // take previous projection's monthlySavings savings rate
-      // add to current base rate savings since joining
-      let previousProjection: Projection | null =
-        i > 0 ? projections[i - 1] : null;
-      if (previousProjection)
-        projection.savings.totalSinceJoining =
-          previousProjection.savings.totalSinceJoining +
-          previousProjection.savings.monthlySavings;
-
-      // UPDATE monthlySavings saving, income & expense if any projectedChange falls into this month
+      // UPDATE monthlySavings, income & expense if any projectedChange falls into this month
       for (let j = 0; j < projectedChanges.length; j++) {
         let projectedChange = projectedChanges[j];
-        if (moment(projection.month).isSame(projectedChange.date, "month")) {
+        if (moment(currentMonth.month).isSame(projectedChange.date, "month")) {
           let type = projectedChange.type;
           let category = projectedChange.category;
-          projection.typeAverages[type] += projectedChange.amount;
-          projection.categoryAverages[category] += projectedChange.amount;
+          currentMonth.typeAverages[type] += projectedChange.amount;
+          currentMonth.categoryAverages[category] += projectedChange.amount;
 
           if (type === "expense") {
-            projection.savings.monthlySavings -= projectedChange.amount;
+            currentMonth.savings.monthlySavings -= projectedChange.amount;
           } else {
-            projection.savings.monthlySavings += projectedChange.amount;
+            currentMonth.savings.monthlySavings += projectedChange.amount;
           }
+          currentMonth.projectedChanges.push(projectedChange);
 
-          projection.projectedChanges.push(projectedChange);
+          if (projectedChange.includeAvg && i < projections.length - 1) {
+            let recurringProjectedChange = JSON.parse(
+              JSON.stringify(projectedChange)
+            );
+            let currentDate = recurringProjectedChange.date;
+            recurringProjectedChange.date = moment(currentDate)
+              .add(1, "months")
+              .toISOString();
+            projectedChanges.push(recurringProjectedChange);
+          }
         }
       }
     }
+    // Update cumulative savings (totalSinceJoining) based on monthly data
+    calculateCumulativeSavings(projections);
   }
   return projections;
 }
@@ -273,7 +290,7 @@ function dateRangeFromCurrentMonthIntoPast(rangeInMonths: number) {
 function monthCountProjections(queriedDate: string, rangeInMonths: number) {
   const today = new Date();
   const startMonth = moment(today);
-  const endMonth = moment(queriedDate).add(rangeInMonths, "months");
+  const endMonth = moment(queriedDate).add(rangeInMonths - 1, "months");
   const monthCountProjections = endMonth.diff(startMonth, "months");
   return monthCountProjections;
 }
@@ -291,14 +308,13 @@ function dateRangeProjections(queriedDate: string, rangeInMonths: number) {
   return { startDate, endDate };
 }
 
-// Returns startDate & endDate of a dateRange that starts with startDate in arguments
-// startDate = first day of the month given in arguments
-// endDate = first day of the month, rangeInMonths months into the future
-function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
-  startDate = moment(startDate).startOf("month").toISOString();
-  const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
-  return { startDate, endDate };
-}
+const projectionController = {
+  getProjections,
+  createProjectedChange,
+  getProjectedChanges,
+};
+
+export default projectionController;
 
 // // set start value depending on diff in months from current months
 // // calculate number of months between queried month and current month
@@ -317,10 +333,11 @@ function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
 //   return monthsDiffFromCurrentMonth;
 // }
 
-const projectionController = {
-  getProjections,
-  createProjectedChange,
-  getProjectedChanges,
-};
-
-export default projectionController;
+// Returns startDate & endDate of a dateRange that starts with startDate in arguments
+// startDate = first day of the month given in arguments
+// endDate = first day of the month, rangeInMonths months into the future
+// function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
+//   startDate = moment(startDate).startOf("month").toISOString();
+//   const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
+//   return { startDate, endDate };
+// }
