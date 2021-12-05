@@ -171,7 +171,6 @@ const USER_2_NAME = "Ben";
 
     [user1, user2].forEach((user) => {
       const { userId } = user;
-      const userTransactions = [];
       // these don't change much from month to month, fix them now
       const salary = random(3200, 3500);
       const elecBill = random(80, 90);
@@ -180,6 +179,8 @@ const USER_2_NAME = "Ben";
 
       // function declared here to make use of user data in closure
       const createTransaction = (day, month, amount, category, description) => {
+        const hour = random(0, 23);
+        const minute = random(0, 59);
         return {
           transactionType:
             category === CATEGORIES.salary ||
@@ -190,12 +191,13 @@ const USER_2_NAME = "Ben";
           amount: amount * 100 + random(0, 99),
           currency: "EUR",
           category,
-          date: new Date(yearNow, month, day).toISOString(),
+          date: new Date(yearNow, month, day, hour, minute).toISOString(),
           description: description || getRandomDescription(category),
         };
       };
 
-      months.forEach((month) => {
+      months.forEach((month, idx) => {
+        const monthTransactions = [];
         // create recurring transactions for months in question
         const salaryT = createTransaction(
           dateNow,
@@ -229,13 +231,13 @@ const USER_2_NAME = "Ben";
           "Utilities: water"
         );
 
-        userTransactions.push(salaryT);
-        userTransactions.push(elecT);
-        userTransactions.push(gasT);
-        userTransactions.push(waterT);
+        monthTransactions.push(salaryT);
+        monthTransactions.push(elecT);
+        monthTransactions.push(gasT);
+        monthTransactions.push(waterT);
 
         // random transactions for the month
-        let numRandomTransactions = random(70, 90);
+        let numRandomTransactions = random(50, 80);
         for (let i = 0; i <= numRandomTransactions; i += 1) {
           const categoriesNoSalary = { ...CATEGORIES };
           delete categoriesNoSalary.salary;
@@ -248,9 +250,10 @@ const USER_2_NAME = "Ben";
             category,
             description
           );
-          userTransactions.push(randomTransaction);
+          monthTransactions.push(randomTransaction);
         }
-        allTransactions = allTransactions.concat(userTransactions);
+        console.log(`generated ${monthTransactions.length} in month ${idx}`);
+        allTransactions = allTransactions.concat(monthTransactions);
       }); // months.forEach()
     }); // users.forEach()
     processTransactions(allTransactions);
