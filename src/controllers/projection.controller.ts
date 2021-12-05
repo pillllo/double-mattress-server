@@ -10,6 +10,7 @@ import Projection, {
 } from "../types/projection";
 import DateRange from "../types/dateRange";
 import { ProjectedChange } from ".prisma/client";
+import projectedChange from "../types/projectedChange";
 
 const categories = [
   "Salary",
@@ -52,28 +53,6 @@ async function getProjections(req: Request, res: Response) {
 
 // Create a new projectedChange in the db
 // Return updated array of projections
-// async function createProjectedChange(req: Request, res: Response) {
-//   try {
-//     let { projectedChange, projections } = req.body;
-//     const newProjectedChange = await ProjectionModel.createProjectedChange(
-//       projectedChange
-//     );
-//     if (newProjectedChange) {
-//       const projectedChanges = [newProjectedChange];
-//       const updatedProjections = addProjectedChangesToProjections(
-//         projections,
-//         projectedChanges
-//       );
-//       res.status(201).send(updatedProjections);
-//     } else {
-//       res.status(400).send("Could not create projected change");
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(400).send("Could not create projected change");
-//   }
-// }
-
 async function createProjectedChange(req: Request, res: Response) {
   try {
     let { projectedChange, projectionsStartDate } = req.body;
@@ -274,6 +253,17 @@ function addProjectedChangesToProjections(
             currentMonth.savings.monthlySavings += projectedChange.amount;
           }
           currentMonth.projectedChanges.push(projectedChange);
+
+          if (projectedChange.includeAvg && i < projections.length - 1) {
+            let recurringProjectedChange = JSON.parse(
+              JSON.stringify(projectedChange)
+            );
+            let currentDate = recurringProjectedChange.date;
+            recurringProjectedChange.date = moment(currentDate)
+              .add(1, "months")
+              .toISOString();
+            projectedChanges.push(recurringProjectedChange);
+          }
         }
       }
     }
