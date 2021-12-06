@@ -21,17 +21,20 @@ export function daysInMonth(month: number, year: number): number {
   return new Date(year, month, 0).getDate();
 }
 
-export function addMonth(date: Date): Date {
+export function changeMonth(date: Date, operation: "add" | "subtract"): Date {
   let day = date.getDate();
   let month = date.getMonth();
   let year = date.getFullYear();
-  console.log(`incoming date - ${day}/${month}/${year}`);
-  // increment +/- wrap month
-  month += 1;
-  month = month > 11 ? 0 : month;
-  // wrap year if we're now in January
-  month === 0 && (year = year + 1);
-  console.log(`outgoing date - ${day}/${month}/${year}`);
+  // increment +/- wrap month / year as necessary
+  if (operation === "add") {
+    month += 1;
+    month = month > 11 ? 0 : month;
+    month === 0 && (year = year + 1);
+  } else if (operation === "subtract") {
+    month -= 1;
+    month = month < 0 ? 11 : month;
+    month === 11 && (year = year - 1);
+  }
   return new Date(year, month, day);
 }
 
