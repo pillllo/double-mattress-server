@@ -138,8 +138,10 @@ async function compileTotalProjections(userId: string, date: string) {
     // PROJECTIONS TIMELINE (first day of current month - 12 months from queried date)
     // For how many months should we create projections
     const monthsInProjections = monthCountProjections(date, 12);
+    console.log("🎯 monthsInProjections", monthsInProjections);
     // For which dateRange should we create projections
     const dateRangeOfProjections = dateRangeProjections(date, 12);
+    console.log("🎯 dateRangeProjections", dateRangeOfProjections);
 
     // BASE PROJECTIONS
     // Add base projections (without projectedChanges) to each of the months
@@ -162,7 +164,9 @@ async function compileTotalProjections(userId: string, date: string) {
 
     // PROJECTIONS FOR QUERIED DATE
     // Only keep data for last 12 months (i.e. 12 months from queriedDate)
+    console.log("🎯 projectionsLength", projections.length);
     const projectionsForQueriedDate = projections.slice(-12);
+    console.log("🎯 queriedDateLength", projectionsForQueriedDate.length);
     return projectionsForQueriedDate;
   } catch (error) {
     console.error(error);
@@ -289,7 +293,8 @@ function dateRangeFromCurrentMonthIntoPast(rangeInMonths: number) {
 // and X months from the queriedDate
 function monthCountProjections(queriedDate: string, rangeInMonths: number) {
   const today = new Date();
-  const startMonth = moment(today);
+  // const startMonth = moment(today);
+  const startMonth = moment(today).startOf("month");
   const endMonth = moment(queriedDate).add(rangeInMonths - 1, "months");
   const monthCountProjections = endMonth.diff(startMonth, "months");
   return monthCountProjections;
