@@ -103,9 +103,23 @@ async function findProjectedChangesByDateRange(
   }
 }
 
+async function deleteProjectedChange(projectedChangeId: string) {
+  try {
+    const deletedProjectedChange = await prisma.projectedChange.delete({
+      where: {
+        id: projectedChangeId,
+      },
+    });
+    return deletedProjectedChange;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
 export default {
   getAverageByType,
   getAverageByCategory,
   createProjectedChange,
   findProjectedChangesByDateRange,
+  deleteProjectedChange,
 };
