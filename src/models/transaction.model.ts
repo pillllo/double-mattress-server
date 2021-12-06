@@ -7,7 +7,7 @@ import { TransactionId } from "../types/id";
 
 async function getTransactionsBetween(userId: string, from: Date, to: Date) {
   try {
-    console.log("transaction.model.getTransactionsBetween()");
+    console.log("TransactionModel.getTransactionsBetween()");
     console.log(`from: ${from.toISOString()} to: ${to.toISOString()}`);
     const results = await prisma.transaction.findMany({
       where: {
@@ -19,14 +19,9 @@ async function getTransactionsBetween(userId: string, from: Date, to: Date) {
       },
       orderBy: { date: "asc" },
     });
-    console.log(`Found ${results.length} records`);
-    const first = results[0];
-    const last = results[results.length - 1];
-    console.log("returned results set follows with dates...");
-    console.log(
-      `first: ${first.date.toISOString()} last: ${last.date.toISOString()}`
-    );
-    console.log();
+    if (!results) {
+      return [];
+    }
     return results;
   } catch (err) {
     console.error("ERROR: ", err);
@@ -36,7 +31,7 @@ async function getTransactionsBetween(userId: string, from: Date, to: Date) {
 
 async function getAllTransactions(userId: string) {
   try {
-    console.log("transaction.model.getAllTransactions()");
+    console.log("TransactionModel.getAllTransactions()");
     const results = await prisma.transaction.findMany({
       where: { userId: userId },
       orderBy: { date: "asc" },
@@ -51,7 +46,7 @@ async function getAllTransactions(userId: string) {
 async function createTransaction(
   transactionData: any
 ): Promise<TransactionId | null> {
-  console.log("transaction.model.createTransaction()");
+  console.log("TransactionModel.createTransaction()");
   try {
     const transaction = { ...transactionData, transactionId: uuid() };
     const result = await prisma.transaction.create({

@@ -141,7 +141,7 @@ Returns data for the deleted `User`.
 
 Get dashboard data for a user and their linked users, namely:
 
--
+- any aggregate data for that month, provided the end of that month has elapsed
 - a list of transactions for the desired month, for the user and any linked users
 
 **Request body**
@@ -149,7 +149,7 @@ Get dashboard data for a user and their linked users, namely:
 In the request body send an object with:
 
 - `userId`: a user ID (type: string) for the user you wish to get transaction data for.
-- `date`: an ISO 8601 date string (from `Date.toISOString()`) for any date or time within the month & year you wish to retrieve. In other words, you don't need to set the day / time on the date.
+- `date`: an ISO 8601 date string (from `Date.toISOString()`) for any date or time within the month & year you wish to retrieve. If you request a date in the future, the requestb will be deemed invalid.
 
 Sample request:
 

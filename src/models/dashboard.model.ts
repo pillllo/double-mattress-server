@@ -4,7 +4,7 @@ import {
   getIncomeCategoryKeys,
   getExpenseCategoryKeys,
 } from "../helpers/category.helpers";
-import { addMonth, getMonthStart } from "../helpers/date.helpers";
+import { changeMonth, getMonthStart } from "../helpers/date.helpers";
 
 import { UserId } from "../types/id";
 
@@ -16,18 +16,21 @@ import { UserId } from "../types/id";
 //----------------------------------------------------------------
 
 function _mergeObjectNumericValues(sources: any, destination: any) {
-  // combine any numeric values from all aggregate objects
+  // combine any numeric values from sources array of all aggregate objects
   // works for any number of aggregates
+  // one or either source may be null if no aggregate for that user for that month
   sources.forEach((source: any) => {
-    Object.keys(source).forEach((key) => {
-      const value = source[key];
-      if (typeof value === "number") {
-        const valueExists = destination.hasOwnProperty(key);
-        destination[key] = valueExists ? destination[key] + value : value;
-      }
-    });
+    if (source && typeof source === "object") {
+      Object.keys(source).forEach((key) => {
+        const value = source[key];
+        if (typeof value === "number") {
+          const valueExists = destination.hasOwnProperty(key);
+          destination[key] = valueExists ? destination[key] + value : value;
+        }
+      });
+    }
   });
-  return destination;
+  return Object.keys(destination).length > 0 ? destination : null;
 }
 
 function _getBreakdownByUser(
@@ -35,21 +38,34 @@ function _getBreakdownByUser(
   destination: any,
   keysOfInterest: string[]
 ) {
+  // one or either source may be null if no aggregate for that user for that month
   keysOfInterest.forEach((key) => {
     sources.forEach((source: any) => {
-      const keyExists = destination.hasOwnProperty(key);
-      // add desired key, and initialise nested value to empty object if not preset
-      // then add nested userId and value for that user
-      destination[key] = keyExists ? destination[key] : {};
-      destination[key][source.userId] = source.categoriesForPeriod[key];
+      if (source && typeof source === "object") {
+        const keyExists = destination.hasOwnProperty(key);
+        // add desired key, and initialise nested value to empty object if not preset
+        // then add nested userId and value for that user
+        destination[key] = keyExists ? destination[key] : {};
+        destination[key][source.userId] = source.categoriesForPeriod[key];
+      }
     });
   });
-  return destination;
+  return Object.keys(destination).length > 0 ? destination : null;
 }
 
 function _compileDashboardData(aggregates: any, transactions: any) {
-  console.log("compileDashboardData()");
+  // because we are processing 2 user's info at once, we can't return any earlier
+  // until we know that there is no aggregate data for either
+  console.log("_compileDashboardData()");
   const merged = _mergeObjectNumericValues(aggregates, {});
+  // yuck
+  const savings = merged
+    ? {
+        currentMonth: merged.savingsForPeriod,
+        totalSinceJoining: merged.cumulativeSavingsSinceJoin,
+      }
+    : null;
+
   const dashboardData = {
     categoryTotals: _getBreakdownByUser(
       aggregates,
@@ -57,10 +73,7 @@ function _compileDashboardData(aggregates: any, transactions: any) {
       getExpenseCategoryKeys()
     ),
     typeTotals: _getBreakdownByUser(aggregates, {}, getIncomeCategoryKeys()),
-    savings: {
-      currentMonth: merged.savingsForPeriod,
-      totalSinceJoining: merged.cumulativeSavingsSinceJoin,
-    },
+    savings,
     transactions: transactions.flat(),
   };
   return dashboardData;
@@ -70,28 +83,30 @@ function _compileDashboardData(aggregates: any, transactions: any) {
 // MODEL
 //----------------------------------------------------------------
 
-async function getDashboardData(userIds: UserId[], desiredDate: Date) {
+async function getDashboardData(userIds: UserId[], fromMonthStart: Date) {
   try {
     console.log("DashboardModel.getDashboardData()");
-    // ask history model if we have any previous months
+    // get aggregate data for previous month
     // will need them regardless
+    console.log("dashboard date: ", fromMonthStart.toISOString());
+    // const previousMonth = changeMonth(fromMonthStart, "subtract");
+    // get aggregate data for all requested users
     const aggregates = await Promise.all(
       userIds.map(async (userId) => {
-        const previousMonth = await AggregatesModel.getAggregateForMonth(
+        const agg = await AggregatesModel.getAggregateForMonth(
           userId,
-          desiredDate
+          fromMonthStart
         );
-        return previousMonth;
+        return agg;
       })
     );
-    // get transactions for current month
-    const from = getMonthStart(desiredDate);
-    const to = getMonthStart(addMonth(desiredDate));
+    // get transactions for requested month for all requested users
+    const to = getMonthStart(changeMonth(fromMonthStart, "add"));
     const transactions = await Promise.all(
       userIds.map(async (userId) => {
         const tr = await TransactionModel.getTransactionsBetween(
           userId,
-          from,
+          fromMonthStart,
           to
         );
         return tr;
