@@ -1,12 +1,8 @@
 import prisma from "./db";
 import { UserId } from "../types/id";
 import { v4 as uuid } from "uuid";
-import { ProjectedChange, User } from ".prisma/client";
-
-type DateRange = {
-  startDate: string;
-  endDate: string;
-};
+import { ProjectedChange } from ".prisma/client";
+import DateRange from "../types/dateRange";
 
 async function getAverageByType(
   userIds: UserId[] | undefined,
@@ -107,9 +103,23 @@ async function findProjectedChangesByDateRange(
   }
 }
 
+async function deleteProjectedChange(projectedChangeId: string) {
+  try {
+    const deletedProjectedChange = await prisma.projectedChange.delete({
+      where: {
+        id: projectedChangeId,
+      },
+    });
+    return deletedProjectedChange;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
 export default {
   getAverageByType,
   getAverageByCategory,
   createProjectedChange,
   findProjectedChangesByDateRange,
+  deleteProjectedChange,
 };
