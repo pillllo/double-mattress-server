@@ -55,7 +55,7 @@ async function getProjections(req: Request, res: Response) {
 // Return updated array of projections
 async function createProjectedChange(req: Request, res: Response) {
   try {
-    let { projectedChange, projectionsStartDate } = req.body;
+    const { projectedChange, projectionsStartDate } = req.body;
     const newProjectedChange = await ProjectionModel.createProjectedChange(
       projectedChange
     );
@@ -71,6 +71,28 @@ async function createProjectedChange(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not create projected change");
+  }
+}
+
+//----------------------------------------------------------------
+// DELETE /projections
+//----------------------------------------------------------------
+async function deleteProjectedChange(req: Request, res: Response) {
+  try {
+    const { projectedChangeId, projectionsStartDate } = req.body;
+    const deletedProjectedChange = await ProjectionModel.deleteProjectedChange(
+      projectedChangeId
+    );
+    if (deletedProjectedChange) {
+      const updatedProjections = await compileTotalProjections(
+        deletedProjectedChange.userId,
+        projectionsStartDate
+      );
+      res.status(201).send(updatedProjections);
+    } else res.status(400).send("Could not delete the projected change");
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not delete the projected change");
   }
 }
 
@@ -138,10 +160,8 @@ async function compileTotalProjections(userId: string, date: string) {
     // PROJECTIONS TIMELINE (first day of current month - 12 months from queried date)
     // For how many months should we create projections
     const monthsInProjections = monthCountProjections(date, 12);
-    console.log("🎯 monthsInProjections", monthsInProjections);
     // For which dateRange should we create projections
     const dateRangeOfProjections = dateRangeProjections(date, 12);
-    console.log("🎯 dateRangeProjections", dateRangeOfProjections);
 
     // BASE PROJECTIONS
     // Add base projections (without projectedChanges) to each of the months
@@ -164,9 +184,7 @@ async function compileTotalProjections(userId: string, date: string) {
 
     // PROJECTIONS FOR QUERIED DATE
     // Only keep data for last 12 months (i.e. 12 months from queriedDate)
-    console.log("🎯 projectionsLength", projections.length);
     const projectionsForQueriedDate = projections.slice(-12);
-    console.log("🎯 queriedDateLength", projectionsForQueriedDate.length);
     return projectionsForQueriedDate;
   } catch (error) {
     console.error(error);
@@ -317,32 +335,7 @@ const projectionController = {
   getProjections,
   createProjectedChange,
   getProjectedChanges,
+  deleteProjectedChange,
 };
 
 export default projectionController;
-
-// // set start value depending on diff in months from current months
-// // calculate number of months between queried month and current month
-// const diffQueriedMonthCurrentMonth = monthsDiffFromCurrentMonth(date);
-// // get totalSinceJoining by multiplying months since since current month * average savings / months
-// totalSinceJoining =
-//   totalSinceJoining + monthlySavings * diffQueriedMonthCurrentMonth;
-
-// // Returns difference, in months, between the queried date
-// // and the current month
-// function monthsDiffFromCurrentMonth(date: string) {
-//   const today = new Date();
-//   var currentMonth = moment(today);
-//   var queriedMonth = moment(date);
-//   const monthsDiffFromCurrentMonth = queriedMonth.diff(currentMonth, "months");
-//   return monthsDiffFromCurrentMonth;
-// }
-
-// Returns startDate & endDate of a dateRange that starts with startDate in arguments
-// startDate = first day of the month given in arguments
-// endDate = first day of the month, rangeInMonths months into the future
-// function dateRangeFromStartDate(startDate: string, rangeInMonths: number) {
-//   startDate = moment(startDate).startOf("month").toISOString();
-//   const endDate = moment(startDate).add(rangeInMonths, "months").toISOString();
-//   return { startDate, endDate };
-// }
