@@ -27,6 +27,7 @@ async function createCheckoutSession(req: Request, res: Response) {
   try {
     const { lookup_key } = req.body;
     console.log("🎯 lookupKey", lookup_key);
+    console.log("🎯 body", req.body);
     const prices = await stripe.prices.list({
       // lookup_keys: [req.body.lookup_key],
       lookup_keys: [lookup_key],
@@ -45,6 +46,7 @@ async function createCheckoutSession(req: Request, res: Response) {
       success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}?canceled=true`,
     });
+    console.log("🎯 prices", prices);
     console.log("🎯 checkOut created");
     res.redirect(303, session.url);
   } catch (error) {
