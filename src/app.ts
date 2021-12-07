@@ -32,13 +32,19 @@ function bootstrapServer() {
   const expressApp = express();
   // const staticPath = path.join(__dirname, "./public");
   const corsConfig = {
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://checkout.stripe.com",
+      "https://double-mattress.herokuapp.com",
+    ],
     credentials: true,
     methods: "*",
   };
 
-  // expressApp.use(cors(corsConfig));
-  expressApp.use(express.json());
+  app.use(cors(corsConfig));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.static("public"));
   // "security"
   // expressApp.use((req, res, next) => {
   //   const jwt = req.headers["client-jwt"];

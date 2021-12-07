@@ -1,12 +1,10 @@
 import { UserId } from "./id";
 
 type TransactionAggregate = {
-  id: number;
   userId: UserId;
   year: number;
-  month: number;
+  month: number; // JS month is zero-based, will store one-based on DB
   monthName: string;
-  periodType: string;
   categoriesForPeriod: any;
   incomeForPeriod: number;
   expensesForPeriod: number;
