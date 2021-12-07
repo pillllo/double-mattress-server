@@ -1,11 +1,11 @@
 import prisma from "./db";
 import { v4 as uuid } from "uuid";
 
-import { TransactionId } from "../types/id";
+import { UserId, TransactionId } from "../types/id";
 
 // TODO: limit number of transactions
 
-async function getTransactionsBetween(userId: string, from: Date, to: Date) {
+async function getTransactionsBetween(userId: UserId, from: Date, to: Date) {
   try {
     console.log("transaction.model.getTransactionsBetween()");
     console.log(`from: ${from.toISOString()} to: ${to.toISOString()}`);
@@ -34,7 +34,7 @@ async function getTransactionsBetween(userId: string, from: Date, to: Date) {
   }
 }
 
-async function getAllTransactions(userId: string) {
+async function getAllTransactions(userId: UserId) {
   try {
     console.log("transaction.model.getAllTransactions()");
     const results = await prisma.transaction.findMany({

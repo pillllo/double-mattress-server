@@ -1,8 +1,9 @@
 import { Router } from "express";
 import userController from "../controllers/user.controller";
 import transactionController from "../controllers/transaction.controller";
-import projectionController from "../controllers/projection.controller";
 import dashboardController from "../controllers/dashboard.controller";
+import projectionController from "../controllers/projection.controller";
+import notificationController from "../controllers/notification.controller";
 
 const router = Router();
 
@@ -40,5 +41,11 @@ router.post("/dashboard", dashboardController.getDashboard);
 router.post("/projections", projectionController.getProjections);
 router.post("/projections/create", projectionController.createProjectedChange);
 router.delete("/projections", projectionController.deleteProjectedChange);
+
+//----------------------------------------------------------------
+// NOTIFICATIONS
+//----------------------------------------------------------------
+
+router.post("/notifications", notificationController.getNotifications);
 
 export default router;
