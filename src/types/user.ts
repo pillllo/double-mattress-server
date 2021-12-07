@@ -6,6 +6,7 @@ type User = {
   email: string;
   currency: string;
   linkedUserIds: string[];
+  activeSubscription: boolean;
 };
 
 export default User;

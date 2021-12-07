@@ -1,10 +1,8 @@
 import prisma from "./db";
 import { ConnectionRequest } from "@prisma/client";
 
-import UserModel from "./user.model";
-
 import User from "../types/user";
-import { UserId } from "../types/id";
+
 import { CONNECTION_REQUEST_STATUS as STATUS } from "../config/constants";
 
 async function checkPendingConnections(

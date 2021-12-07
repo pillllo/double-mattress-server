@@ -1,4 +1,5 @@
-import { Router } from "express";
+// import { Router } from "express";
+import express from "express";
 import userController from "../controllers/user.controller";
 import transactionController from "../controllers/transaction.controller";
 import dashboardController from "../controllers/dashboard.controller";
@@ -7,7 +8,7 @@ import connectionController from "../controllers/connection.controller";
 import subscriptionController from "../controllers/subscription.controller";
 import notificationController from "../controllers/notification.controller";
 
-const router = Router();
+const router = express.Router();
 
 //----------------------------------------------------------------
 // USER
