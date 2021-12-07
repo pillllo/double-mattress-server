@@ -5,8 +5,7 @@ require("custom-env").env(environment);
 // Set your secret key. Remember to switch to your live secret key in production.
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY_TEST);
-// const DOMAIN = process.env.DOMAIN;
-const DOMAIN = "https://double-mattress.herokuapp.com";
+const DOMAIN = process.env.DOMAIN;
 
 async function testStripe(req: Request, res: Response) {
   try {
