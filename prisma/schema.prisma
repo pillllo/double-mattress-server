@@ -10,6 +10,7 @@ datasource db {
 model User {
   userId        String   @id @unique
   firstName     String
+  email         String   @unique
   currency      String   @default("EUR")
   linkedUserIds String[]
 }
@@ -54,4 +55,14 @@ model ProjectedChange {
   includeAvg  Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  notificationId Int      @id @default(autoincrement())
+  forUserId      String
+  fromUserId     String
+  fromUserName   String
+  date           DateTime
+  message        String
+  read           Boolean  @default(true)
 }

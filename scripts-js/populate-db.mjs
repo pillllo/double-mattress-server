@@ -9,6 +9,7 @@ import { getRandomNumber as random, getDaysInMonth } from "./helpers.mjs";
 function createUser(name, currency = "EUR") {
   const user = {
     firstName: name,
+    email: `${name.toLowerCase()}@dm.com`,
     currency,
     linkedUserIds: [],
   };
