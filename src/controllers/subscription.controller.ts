@@ -101,6 +101,7 @@ async function webhook(req: Request, res: Response) {
   //     return res.sendStatus(400);
   //   }
   // }
+  console.log("🎯 event", event);
   let subscription;
   let status;
   // Handle the event
