@@ -35,6 +35,8 @@ function bootstrapServer() {
   };
 
   app.use(cors(corsConfig));
+  app.use(express.static("public"));
+  app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   // "security"
   // app.use((req, res, next) => {
