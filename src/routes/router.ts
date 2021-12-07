@@ -3,6 +3,7 @@ import userController from "../controllers/user.controller";
 import transactionController from "../controllers/transaction.controller";
 import dashboardController from "../controllers/dashboard.controller";
 import projectionController from "../controllers/projection.controller";
+import connectionController from "../controllers/connection.controller";
 import notificationController from "../controllers/notification.controller";
 
 const router = Router();
@@ -41,6 +42,12 @@ router.post("/dashboard", dashboardController.getDashboard);
 router.post("/projections", projectionController.getProjections);
 router.post("/projections/create", projectionController.createProjectedChange);
 router.delete("/projections", projectionController.deleteProjectedChange);
+
+//----------------------------------------------------------------
+// CONNECT
+//----------------------------------------------------------------
+
+router.post("/connect/initiate", connectionController.initiateConnect);
 
 //----------------------------------------------------------------
 // NOTIFICATIONS

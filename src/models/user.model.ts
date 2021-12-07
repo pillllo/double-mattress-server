@@ -4,20 +4,6 @@ import { v4 as uuid } from "uuid";
 import User from "../types/user";
 import { NewUserRequest } from "../types/requests";
 
-// getUserIds() is convenience for the front end devs to query
-// for userIds in case they can't remember / retrieve their test userId
-// returns all userIds in the database
-// TODO: remove model once login implemented
-async function getAllUserIds(): Promise<string[] | undefined> {
-  try {
-    console.log("user.model.getUserIds()");
-    const allUsers = await prisma.user.findMany({ distinct: ["userId"] });
-    return allUsers.map((user) => user.userId);
-  } catch (err) {
-    console.error("ERROR: ", err);
-  }
-}
-
 // Get user profile, if user does not exist return false
 async function getUser(userId: string): Promise<User | null> {
   try {
@@ -64,6 +50,40 @@ async function getUsers(userId: string): Promise<User[]> {
   }
 }
 
+async function getUserByEmail(email: string): Promise<User | null> {
+  try {
+    console.log("UserModel.getUserByEmail() for email: ", email);
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (!user) throw new Error("no user returned");
+    return user;
+  } catch (err) {
+    console.error("ERROR: ", err);
+    return null;
+  }
+}
+
+//----------------------------------------------------------------
+// GET - IDs
+//----------------------------------------------------------------
+
+// getUserIds() is convenience for the front end devs to query
+// for userIds in case they can't remember / retrieve their test userId
+// returns all userIds in the database
+// TODO: remove model once login implemented
+async function getAllUserIds(): Promise<string[] | undefined> {
+  try {
+    console.log("user.model.getUserIds()");
+    const allUsers = await prisma.user.findMany({ distinct: ["userId"] });
+    return allUsers.map((user) => user.userId);
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
 // Get userIds of the user and all linked users, if user does not exist return false
 async function getUserIds(userId: string) {
   try {
@@ -75,6 +95,10 @@ async function getUserIds(userId: string) {
     console.error("ERROR", err);
   }
 }
+
+//----------------------------------------------------------------
+// USERS - CREATE, UPDATE, DELETE
+//----------------------------------------------------------------
 
 async function createUser(userData: NewUserRequest) {
   try {
@@ -127,6 +151,7 @@ async function deleteUser(userId: string) {
 export default {
   getAllUserIds,
   getUser,
+  getUserByEmail,
   getUsers,
   getUserIds,
   createUser,

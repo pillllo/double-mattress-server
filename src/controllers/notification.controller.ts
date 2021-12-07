@@ -17,6 +17,8 @@ async function getNotifications(req: Request, res: Response): Promise<void> {
   }
 }
 
-export default {
+const NotificationController = {
   getNotifications,
 };
+
+export default NotificationController;
