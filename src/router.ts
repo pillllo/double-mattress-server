@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import userController from "./controllers/user.controller";
 import transactionController from "./controllers/transaction.controller";
 import projectionController from "./controllers/projection.controller";
@@ -49,6 +49,15 @@ router.get("/subscriptions", subscriptionController.testStripe);
 router.post(
   "/create-checkout-session",
   subscriptionController.createCheckoutSession
+);
+router.post(
+  "/create-customer-portal",
+  subscriptionController.createCustomerPortal
+);
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  subscriptionController.webhook
 );
 
 export default router;
