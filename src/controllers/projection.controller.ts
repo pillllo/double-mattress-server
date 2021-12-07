@@ -10,7 +10,7 @@ import Projection, {
 } from "../types/projection";
 import DateRange from "../types/dateRange";
 import { ProjectedChange } from ".prisma/client";
-import projectedChange from "../types/projectedChange";
+// import ProjectedChange from "../types/projectedChange";
 
 const categories = [
   "Salary",

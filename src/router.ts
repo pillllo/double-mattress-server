@@ -3,6 +3,7 @@ import userController from "./controllers/user.controller";
 import transactionController from "./controllers/transaction.controller";
 import projectionController from "./controllers/projection.controller";
 import dashboardController from "./controllers/dashboard.controller";
+import subscriptionController from "./controllers/subscription.controller";
 
 const router = Router();
 
@@ -40,5 +41,14 @@ router.post("/dashboard", dashboardController.getDashboard);
 router.post("/projections", projectionController.getProjections);
 router.post("/projections/create", projectionController.createProjectedChange);
 router.delete("/projections", projectionController.deleteProjectedChange);
+
+//----------------------------------------------------------------
+// PAYMENT
+//----------------------------------------------------------------
+router.get("/subscriptions", subscriptionController.testStripe);
+router.post(
+  "/create-checkout-session",
+  subscriptionController.createCheckoutSession
+);
 
 export default router;

@@ -2,7 +2,7 @@ import Category from "./category";
 
 type ProjectedChange = {
   id: string;
-  type: "income" | "expense";
+  type: string;
   userId: string;
   amount: number;
   currency: string;
@@ -10,6 +10,8 @@ type ProjectedChange = {
   date: string; // using ISO strings vs integer as they are human readable
   description: string;
   includeAvg?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export default ProjectedChange;
