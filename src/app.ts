@@ -26,7 +26,7 @@ function bootstrapServer() {
   }
   // correct .env file has been found, now load it
   require("custom-env").env(environment);
-  const { PORT } = process.env;
+  const { PORT } = process.env || 3001;
 
   // 1. create Express app instance, configure static assets & routes
   const expressApp = express();
