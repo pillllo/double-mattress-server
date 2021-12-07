@@ -42,8 +42,9 @@ function bootstrapServer() {
   };
 
   expressApp.use(cors(corsConfig));
-  expressApp.use(express.urlencoded({ extended: true }));
   expressApp.use(express.json());
+  expressApp.use(express.urlencoded({ extended: true }));
+  expressApp.use(express.static("public"));
   // "security"
   // expressApp.use((req, res, next) => {
   //   const jwt = req.headers["client-jwt"];
