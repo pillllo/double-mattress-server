@@ -26,7 +26,11 @@ function bootstrapServer() {
 
   const app = express();
   const corsConfig = {
-    origin: ["http://localhost:3000", "https://checkout.stripe.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://checkout.stripe.com",
+      "https://double-mattress.herokuapp.com",
+    ],
     credentials: true,
   };
 
