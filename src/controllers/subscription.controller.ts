@@ -79,6 +79,7 @@ async function createCustomerPortal(req: Request, res: Response) {
 
 async function webhook(req: Request, res: Response) {
   let event = req.body;
+<<<<<<< HEAD
   // Replace this endpoint secret with your endpoint's unique secret
   // If you are testing with the CLI, find the secret by running 'stripe listen'
   // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
@@ -101,6 +102,8 @@ async function webhook(req: Request, res: Response) {
   //     return res.sendStatus(400);
   //   }
   // }
+=======
+>>>>>>> dev
   console.log("🎯 event", event);
   let subscription;
   let status;
