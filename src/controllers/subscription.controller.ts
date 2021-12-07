@@ -47,6 +47,7 @@ async function createCheckoutSession(req: Request, res: Response) {
       cancel_url: `${DOMAIN}/subscription`,
     });
     console.log("🎯 checkOut session", session.id);
+    console.log("🎯 checkOut session", session);
     console.log("🎯 checkOut created");
     res.redirect(303, session.url);
   } catch (error) {
