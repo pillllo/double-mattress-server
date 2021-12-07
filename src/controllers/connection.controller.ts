@@ -75,7 +75,7 @@ async function completeConnect(req: Request, res: Response): Promise<void> {
     const initiator = await UserModel.getUser(connectToUserId);
     if (!target || !initiator) throw "user not found for connection";
     const success = await ConnectionModel.completeConnection(target, initiator);
-    if (!success) throw "used linking unsuccessful";
+    if (!success) throw "user linking unsuccessful";
     res.status(200).send();
   } catch (err) {
     console.error(err);

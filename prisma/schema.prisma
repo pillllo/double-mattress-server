@@ -8,20 +8,12 @@ datasource db {
 }
 
 model User {
-  <<<<<<< HEAD
-  userId             String   @id @unique
-  firstName          String
-  email              String   @unique
-  currency           String   @default("EUR")
-  linkedUserIds      String[]
-  =======
   userId             String   @id @unique
   firstName          String
   email              String   @unique
   currency           String   @default("EUR")
   linkedUserIds      String[]
   activeSubscription Boolean  @default(false)
-  >>>>>>> main
 }
 
 model Transaction {

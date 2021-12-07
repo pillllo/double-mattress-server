@@ -15,7 +15,7 @@ async function checkPendingConnections(
       where: {
         initiatingUserId: initiator.userId,
         targetUserId: target.userId,
-        status: STATUS.OPEN,
+        status: STATUS.PENDING,
       },
     });
     return pending;
@@ -53,7 +53,7 @@ async function completeConnection(
       where: {
         initiatingUserId: initiator.userId,
         targetUserId: target.userId,
-        status: STATUS.OPEN,
+        status: STATUS.PENDING,
       },
       orderBy: { createdOn: "asc" },
     });
