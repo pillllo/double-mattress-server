@@ -40,6 +40,7 @@ async function createCheckoutSession(req: Request, res: Response) {
           quantity: 1,
         },
       ],
+      payment_method_types: ["card"],
       mode: "subscription",
       // success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       success_url: `${DOMAIN}/projections`,
