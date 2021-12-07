@@ -67,7 +67,7 @@ router.post(
 );
 router.post(
   "/webhook",
-  express.raw({ type: "application/json" }),
+  express.json({ type: "application/json" }),
   subscriptionController.webhook
 );
 

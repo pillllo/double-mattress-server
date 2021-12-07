@@ -46,7 +46,7 @@ async function createCheckoutSession(req: Request, res: Response) {
       success_url: `${DOMAIN}/projections`,
       cancel_url: `${DOMAIN}/subscription`,
     });
-    console.log("🎯 checkOut session", session);
+    console.log("🎯 checkOut session", session.id);
     console.log("🎯 checkOut created");
     res.redirect(303, session.url);
   } catch (error) {
@@ -83,23 +83,24 @@ async function webhook(req: Request, res: Response) {
   // If you are testing with the CLI, find the secret by running 'stripe listen'
   // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
   // at https://dashboard.stripe.com/webhooks
-  const endpointSecret = "whsec_12345";
+  const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+  // "whsec_12345";
   // Only verify the event if you have an endpoint secret defined.
   // Otherwise use the basic event deserialized with JSON.parse
-  if (endpointSecret) {
-    // Get the signature sent by Stripe
-    const signature = req.headers["stripe-signature"];
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        endpointSecret
-      );
-    } catch (error) {
-      console.log(`⚠️  Webhook signature verification failed.`);
-      return res.sendStatus(400);
-    }
-  }
+  // if (endpointSecret) {
+  //   // Get the signature sent by Stripe
+  //   const signature = req.headers["stripe-signature"];
+  //   try {
+  //     event = stripe.webhooks.constructEvent(
+  //       req.body,
+  //       signature,
+  //       endpointSecret
+  //     );
+  //   } catch (error) {
+  //     console.log(`⚠️  Webhook signature verification failed.`);
+  //     return res.sendStatus(400);
+  //   }
+  // }
   let subscription;
   let status;
   // Handle the event
@@ -121,7 +122,7 @@ async function webhook(req: Request, res: Response) {
     case "customer.subscription.created":
       subscription = event.data.object;
       status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
+      console.log(`Subscription status is ${status}.`, subscription.id);
       // Then define and call a method to handle the subscription created.
       // handleSubscriptionCreated(subscription);
       break;
@@ -137,7 +138,7 @@ async function webhook(req: Request, res: Response) {
       console.log(`Unhandled event type ${event.type}.`);
   }
   // Return a 200 response to acknowledge receipt of the event
-  res.send();
+  res.status(200).send("Event received");
 }
 
 const subscriptionController = {
