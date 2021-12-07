@@ -1,8 +1,8 @@
 import { Router } from "express";
-import userController from "./controllers/user.controller";
-import transactionController from "./controllers/transaction.controller";
-import projectionController from "./controllers/projection.controller";
-import dashboardController from "./controllers/dashboard.controller";
+import userController from "../controllers/user.controller";
+import transactionController from "../controllers/transaction.controller";
+import projectionController from "../controllers/projection.controller";
+import dashboardController from "../controllers/dashboard.controller";
 
 const router = Router();
 

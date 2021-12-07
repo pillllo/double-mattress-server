@@ -1,12 +1,8 @@
 import path from "path";
 import fs from "fs";
-import http from "http";
 import express from "express";
 import cors from "cors";
-import { Server as io } from "socket.io";
-
-import router from "./routes/router";
-import registerSocketHandlers from "./sockets";
+import router from "./router";
 
 function bootstrapServer() {
   // support switching between .env.production and .env.development
@@ -28,19 +24,16 @@ function bootstrapServer() {
   require("custom-env").env(environment);
   const { PORT } = process.env;
 
-  // 1. create Express app instance, configure static assets & routes
-  const expressApp = express();
-  // const staticPath = path.join(__dirname, "./public");
+  const app = express();
   const corsConfig = {
     origin: "http://localhost:3000",
     credentials: true,
-    methods: "*",
   };
 
-  // expressApp.use(cors(corsConfig));
-  expressApp.use(express.json());
+  app.use(cors(corsConfig));
+  app.use(express.json());
   // "security"
-  // expressApp.use((req, res, next) => {
+  // app.use((req, res, next) => {
   //   const jwt = req.headers["client-jwt"];
   //   if (jwt !== process.env.CLIENT_JWT) {
   //     console.log("Auth failed");
@@ -50,27 +43,16 @@ function bootstrapServer() {
   //   }
   // });
   // Logging middleware
-  expressApp.use((req, res, next) => {
+  app.use((req, res, next) => {
     console.log(`${req.method} request received for url: ${req.url}`);
     next();
   });
-  // expressApp.use(express.static(staticPath));
-  expressApp.use(router);
-  expressApp.get("*", (req, res) => {
+  app.use(router);
+  app.get("*", (req, res) => {
     res.status(404).send();
   });
 
-  // 2. create Node HTTP server and pass it the Express instance
-  const httpServer = http.createServer(expressApp);
-  // 3.create socket.io server, and pass it the HTTP server
-  const socketServer = new io(httpServer);
-  // 4. declare socket listeners
-  registerSocketHandlers(socketServer);
-  socketServer.on("connection", (socket) => {
-    console.log("Socket connection initiated: ", socket.id);
-  });
-  // 5. listen to the HTTP server, NOT the Express app
-  httpServer.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`🚀 Server is listening at ${PORT}`);
   });
 }
