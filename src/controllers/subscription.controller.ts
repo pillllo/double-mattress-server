@@ -26,6 +26,7 @@ async function testStripe(req: Request, res: Response) {
 async function createCheckoutSession(req: Request, res: Response) {
   try {
     const { lookup_key } = req.body;
+    console.log("🎯 lookupKey", lookup_key);
     const prices = await stripe.prices.list({
       // lookup_keys: [req.body.lookup_key],
       lookup_keys: [lookup_key],
