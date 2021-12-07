@@ -334,3 +334,29 @@ Sample response:
   "description": "Wallpaper"
 }
 ```
+
+# Connect account to another
+
+## `POST /connect/initiate`
+
+**Request body**
+
+In the request body send the `userId` of the requester, and the `email` of the other user they wish to connect to.
+
+Sample request:
+
+```
+{
+  "userId": "c4f2af8d-d47c-48ab-95f1-20f0a2f54a93",
+  "email": "john.doe@example.com"
+}
+```
+
+**Response body**
+
+Returns the `firstName` and `email` of the requested user if the following conditions are met:
+
+- requesting `userId` is valid
+- `email` is a valid email
+- reqesting user is not trying to connect to themselves
+- neither requesting user nor other user are already linked

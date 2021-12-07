@@ -86,11 +86,9 @@ function _compileDashboardData(aggregates: any, transactions: any) {
 async function getDashboardData(userIds: UserId[], fromMonthStart: Date) {
   try {
     console.log("DashboardModel.getDashboardData()");
-    // get aggregate data for previous month
-    // will need them regardless
     console.log("dashboard date: ", fromMonthStart.toISOString());
+    // get aggregate data for previous month
     // const previousMonth = changeMonth(fromMonthStart, "subtract");
-    // get aggregate data for all requested users
     const aggregates = await Promise.all(
       userIds.map(async (userId) => {
         const agg = await AggregatesModel.getAggregateForMonth(

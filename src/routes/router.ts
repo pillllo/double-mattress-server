@@ -49,11 +49,7 @@ router.delete("/projections", projectionController.deleteProjectedChange);
 //----------------------------------------------------------------
 
 router.post("/connect/initiate", connectionController.initiateConnect);
-
-//----------------------------------------------------------------
-// NOTIFICATIONS
-//----------------------------------------------------------------
-
-router.post("/notifications", notificationController.getNotifications);
+router.post("/connect/confirm", connectionController.requestConnect);
+router.post("/connect/complete", connectionController.completeConnect);
 
 export default router;
