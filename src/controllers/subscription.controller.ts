@@ -42,7 +42,6 @@ async function createCheckoutSession(req: Request, res: Response) {
       ],
       payment_method_types: ["card"],
       mode: "subscription",
-      // success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       success_url: `${DOMAIN}/projections`,
       cancel_url: `${DOMAIN}/subscription`,
     });
@@ -80,7 +79,6 @@ async function createCustomerPortal(req: Request, res: Response) {
 
 async function webhook(req: Request, res: Response) {
   let event = req.body;
-  console.log("🎯 event", event);
   let subscription;
   let status;
   // Handle the event
