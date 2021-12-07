@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-// import { getUsers as getUsersFromJsonDB } from "../models/db-json";
+
 import UserModel from "../models/user.model";
 
 // getUserIds() is convenience for the front end devs to query

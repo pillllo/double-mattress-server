@@ -1,9 +1,11 @@
 import { Router } from "express";
-import userController from "./controllers/user.controller";
-import transactionController from "./controllers/transaction.controller";
-import projectionController from "./controllers/projection.controller";
-import dashboardController from "./controllers/dashboard.controller";
-import subscriptionController from "./controllers/subscription.controller";
+import userController from "../controllers/user.controller";
+import transactionController from "../controllers/transaction.controller";
+import dashboardController from "../controllers/dashboard.controller";
+import projectionController from "../controllers/projection.controller";
+import connectionController from "../controllers/connection.controller";
+import subscriptionController from "../controllers/subscription.controller";
+import notificationController from "../controllers/notification.controller";
 
 const router = Router();
 
@@ -43,12 +45,15 @@ router.post("/projections/create", projectionController.createProjectedChange);
 router.delete("/projections", projectionController.deleteProjectedChange);
 
 //----------------------------------------------------------------
-// PAYMENT
+// CONNECT
 //----------------------------------------------------------------
-router.get("/subscriptions", subscriptionController.testStripe);
-router.post(
-  "/create-checkout-session",
-  subscriptionController.createCheckoutSession
-);
+
+router.post("/connect/initiate", connectionController.initiateConnect);
+
+//----------------------------------------------------------------
+// NOTIFICATIONS
+//----------------------------------------------------------------
+
+router.post("/notifications", notificationController.getNotifications);
 
 export default router;
