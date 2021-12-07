@@ -1,4 +1,5 @@
-import { Router } from "express";
+// import { Router } from "express";
+import express from "express";
 import userController from "../controllers/user.controller";
 import transactionController from "../controllers/transaction.controller";
 import dashboardController from "../controllers/dashboard.controller";
@@ -7,7 +8,7 @@ import connectionController from "../controllers/connection.controller";
 import subscriptionController from "../controllers/subscription.controller";
 import notificationController from "../controllers/notification.controller";
 
-const router = Router();
+const router = express.Router();
 
 //----------------------------------------------------------------
 // USER
@@ -55,5 +56,19 @@ router.post("/connect/initiate", connectionController.initiateConnect);
 //----------------------------------------------------------------
 
 router.post("/notifications", notificationController.getNotifications);
+router.get("/subscriptions", subscriptionController.testStripe);
+router.post(
+  "/create-checkout-session",
+  subscriptionController.createCheckoutSession
+);
+router.post(
+  "/create-customer-portal",
+  subscriptionController.createCustomerPortal
+);
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  subscriptionController.webhook
+);
 
 export default router;
