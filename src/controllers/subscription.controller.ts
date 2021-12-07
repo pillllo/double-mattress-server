@@ -79,31 +79,6 @@ async function createCustomerPortal(req: Request, res: Response) {
 
 async function webhook(req: Request, res: Response) {
   let event = req.body;
-<<<<<<< HEAD
-  // Replace this endpoint secret with your endpoint's unique secret
-  // If you are testing with the CLI, find the secret by running 'stripe listen'
-  // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-  // at https://dashboard.stripe.com/webhooks
-  const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
-  // "whsec_12345";
-  // Only verify the event if you have an endpoint secret defined.
-  // Otherwise use the basic event deserialized with JSON.parse
-  // if (endpointSecret) {
-  //   // Get the signature sent by Stripe
-  //   const signature = req.headers["stripe-signature"];
-  //   try {
-  //     event = stripe.webhooks.constructEvent(
-  //       req.body,
-  //       signature,
-  //       endpointSecret
-  //     );
-  //   } catch (error) {
-  //     console.log(`⚠️  Webhook signature verification failed.`);
-  //     return res.sendStatus(400);
-  //   }
-  // }
-=======
->>>>>>> dev
   console.log("🎯 event", event);
   let subscription;
   let status;
