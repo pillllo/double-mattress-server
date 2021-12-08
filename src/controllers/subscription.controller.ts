@@ -43,10 +43,7 @@ async function createCheckoutSession(req: Request, res: Response) {
       ],
       payment_method_types: ["card"],
       mode: "subscription",
-      // success_url: `${DOMAIN}/projections`,
-      // success_url: `${DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
-      // success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
-      success_url: `${DOMAIN}/projections/{CHECKOUT_SESSION_ID}`,
+      success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/subscription`,
     });
     console.log("🎯 checkOut session", session.id);

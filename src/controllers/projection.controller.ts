@@ -37,11 +37,10 @@ async function getProjections(req: Request, res: Response) {
 
     // If user redirected from checkout page, url includes query string
     // so that can request Stripe customer id realted to this transaction
-    // const { session_id } = req.query;
-    const { sessionId } = req.params;
-    console.log("🎯 session_id", sessionId);
-    if (sessionId && user) {
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const { session_id } = req.query;
+    console.log("🎯 session_id", session_id);
+    if (session_id && user) {
+      const session = await stripe.checkout.sessions.retrieve(session_id);
       console.log("🎯 session", session);
       const stripeCustomerId = session.customer;
       const stripeCustomer = await stripe.customers.retrieve(session.customer);
