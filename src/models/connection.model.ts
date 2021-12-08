@@ -15,7 +15,7 @@ async function checkPendingConnections(
       where: {
         initiatingUserId: initiator.userId,
         targetUserId: target.userId,
-        status: STATUS.PENDING,
+        status: STATUS.OPEN,
       },
     });
     return pending;
@@ -46,14 +46,14 @@ async function completeConnection(
   initiator: User
 ): Promise<boolean> {
   try {
-    console.log("ConnectionModel.requestConnection()");
+    console.log("ConnectionModel.completeConnection()");
     // TODO: HERE HERE finish the connection
     // there must be an active CR in the other direction
     const pendingConnections = await prisma.connectionRequest.findMany({
       where: {
         initiatingUserId: initiator.userId,
         targetUserId: target.userId,
-        status: STATUS.PENDING,
+        status: STATUS.OPEN,
       },
       orderBy: { createdOn: "asc" },
     });
