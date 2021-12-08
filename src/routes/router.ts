@@ -66,4 +66,5 @@ router.post(
   subscriptionController.webhook
 );
 router.post("/add-customer-id", subscriptionController.addStripeCustomerId);
+
 export default router;
