@@ -62,9 +62,18 @@ model ProjectedChange {
 model Notification {
   notificationId Int      @id @default(autoincrement())
   forUserId      String
-  fromUserId     String
-  fromUserName   String
-  date           DateTime
+  fromUserId     String?
+  fromUserName   String?  @default("System")
+  date           DateTime @default(now())
   message        String
-  read           Boolean  @default(true)
+  read           Boolean  @default(false)
+}
+
+model ConnectionRequest {
+  id               Int       @id @default(autoincrement())
+  initiatingUserId String
+  targetUserId     String
+  createdOn        DateTime  @default(now())
+  respondedOn      DateTime?
+  status           String    @default("open")
 }

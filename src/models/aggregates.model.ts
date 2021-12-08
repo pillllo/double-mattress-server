@@ -52,7 +52,7 @@ async function _generateMissingAggregates(
 ): Promise<TransactionAggregate[] | null> {
   try {
     console.log("AggregatesModel.generateAggregates()");
-    // need to regeenerate all aggregates any time a user is missing data
+    // need to regenerate all aggregates any time a user is missing data
     // e.g. gap in app usage, or new transactions imported
     // easiest way without complex diffing logic - delete all existing aggregates
     const allAggs = await _deleteAllAggregates(userId);

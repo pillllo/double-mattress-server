@@ -50,25 +50,7 @@ router.delete("/projections", projectionController.deleteProjectedChange);
 //----------------------------------------------------------------
 
 router.post("/connect/initiate", connectionController.initiateConnect);
-
-//----------------------------------------------------------------
-// NOTIFICATIONS
-//----------------------------------------------------------------
-
-router.post("/notifications", notificationController.getNotifications);
-router.get("/subscriptions", subscriptionController.testStripe);
-router.post(
-  "/create-checkout-session",
-  subscriptionController.createCheckoutSession
-);
-router.post(
-  "/create-customer-portal",
-  subscriptionController.createCustomerPortal
-);
-router.post(
-  "/webhook",
-  express.json({ type: "application/json" }),
-  subscriptionController.webhook
-);
+router.post("/connect/confirm", connectionController.requestConnect);
+router.post("/connect/complete", connectionController.completeConnect);
 
 export default router;
