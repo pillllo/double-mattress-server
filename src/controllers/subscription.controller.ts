@@ -93,6 +93,12 @@ async function webhook(req: Request, res: Response) {
       // Then define and call a method to handle the subscription update.
       // handleSubscriptionUpdated(subscription);
       break;
+    case "invoice.paid":
+      subscription = event.data.object;
+      // Continue to provision the subscription as payments continue to be made.
+      // Store the status in your database and check when a user accesses your service.
+      // This approach helps you avoid hitting rate limits.
+      break;
     default:
       // Unexpected event type
       console.log(`Unhandled event type ${event.type}.`);

@@ -7,6 +7,7 @@ type User = {
   currency: string;
   linkedUserIds: string[];
   activeSubscription: boolean;
+  stripeCustomerId?: string | null;
 };
 
 export default User;
