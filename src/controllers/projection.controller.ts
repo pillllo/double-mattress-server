@@ -49,10 +49,7 @@ async function getProjections(req: Request, res: Response) {
         userId,
         stripeCustomerId
       );
-      console.log(
-        "🎯 updatedUser - stripeCusId",
-        updatedUser?.stripeCustomerId
-      );
+      console.log("🎯 updatedUserstripeCusId", updatedUser?.stripeCustomerId);
     }
 
     if (user) {
