@@ -63,9 +63,8 @@ export function init(httpServer: any) {
     // request userId so we can correlate userId from data models
     // -> socket.id for sending future messages
     socket.on(EVENTS.ID.CONFIRM, (payload: any) => {
-      const { userId } = payload;
-      if (userId) {
-        socketManager.addSocket(userId, socket);
+      if (payload && payload.userId) {
+        socketManager.addSocket(payload.userId, socket);
         addNotificationEventHandlers(socket, socketManager);
         // TODO: get notifications and emit them on the socket
       } else {
