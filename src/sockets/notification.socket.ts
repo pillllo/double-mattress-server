@@ -14,7 +14,9 @@ export function addNotificationEventHandlers(
 ): void {
   // bind event listeners
   socket.on(EVENTS.NOTIFICATIONS.GET, async () => {
+    console.log("socket -> getNotifications");
     const userId = socketManager.getUserIdForSocket(socket);
+    console.log(userId);
     if (userId) {
       const notifications = await NotificationModel.getNotifications(userId);
       socket.emit(EVENTS.NOTIFICATIONS.UPDATED, notifications);

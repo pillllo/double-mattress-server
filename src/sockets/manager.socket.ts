@@ -11,7 +11,7 @@ function SocketManager() {
     _pool[userId] = {
       socketId: socket.id,
     };
-    console.dir("_pool after add: ", _pool);
+    console.log("_pool after add: ", _pool);
   };
 
   const getUserIdForSocket = (socket: Socket): UserId | undefined => {
