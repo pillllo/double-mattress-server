@@ -1,7 +1,9 @@
 import { Server as io } from "socket.io";
 
 import SocketManager from "./manager.socket";
+import { addNotificationEventHandlers } from "./notification.socket";
 
+import { Notification } from "../types/notification";
 import {
   SocketServer,
   SocketMiddleware,
@@ -9,7 +11,6 @@ import {
   SocketPacket,
   SocketError,
 } from "../types/socket";
-import { UserId } from "../types/id";
 
 import { SOCKET_EVENTS as EVENTS } from "../config/constants";
 
@@ -20,16 +21,16 @@ import { SOCKET_EVENTS as EVENTS } from "../config/constants";
 let _socketServer: SocketServer;
 const socketManager = SocketManager();
 
-//----------------------------------------------------------------
-// METHODS
-//----------------------------------------------------------------
-
-function isAuthorised(socket: Socket) {
+function _isAuthorised(socket: Socket) {
   const { auth: SocketAuth } = socket.handshake;
   // TODO: enable
   // return auth && auth.token && auth.token === process.env.CLIENT_JWT;
   return true;
 }
+
+//----------------------------------------------------------------
+// EXPORTS
+//----------------------------------------------------------------
 
 export function init(httpServer: any) {
   _socketServer = new io(httpServer);
@@ -38,7 +39,7 @@ export function init(httpServer: any) {
     console.log("socket connected with id: ", socket.id);
     // auth middleware
     socket.use((packet: SocketPacket, next: SocketMiddleware) => {
-      if (isAuthorised(socket)) {
+      if (_isAuthorised(socket)) {
         next();
       } else {
         return next(new Error("unauthorised"));
@@ -52,16 +53,17 @@ export function init(httpServer: any) {
     });
     // request userId so we can correlate userId from data models
     // -> socket.id for sending future messages
-    socket.on(EVENTS.ID_CONFIRM, (payload: any) => {
+    socket.on(EVENTS.ID.CONFIRM, (payload: any) => {
       const { userId } = payload;
       if (userId) {
         socketManager.addSocket(userId, socket);
+        addNotificationEventHandlers(socket, socketManager);
         // TODO: get notifications and emit them on the socket
       } else {
         socket.disconnect();
       }
     });
-    socket.emit(EVENTS.ID_REQUEST);
+    socket.emit(EVENTS.ID.REQUEST);
 
     socket.on(EVENTS.DISCONNECTING, (reason: string) => {
       console.log(`${EVENTS.DISCONNECTING} with reason: ${reason}`);
@@ -71,7 +73,14 @@ export function init(httpServer: any) {
   });
 }
 
-export function testFunc(message: string) {
-  console.log("testFunc, emitting on socket...");
-  _socketServer.to("lobby").emit("test", message);
+export function sendNotificationsOnSocket(notifications: Notification[]) {
+  console.log("sendNotificationsOnSocket()");
+  const { forUserId } = notifications[0];
+  const socketId = socketManager.getSocketIdForUser(forUserId);
+  if (socketId) {
+    // target user is currently connected
+    _socketServer
+      .to(socketId)
+      .emit(EVENTS.NOTIFICATIONS.UPDATED, notifications);
+  }
 }

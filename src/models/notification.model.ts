@@ -1,8 +1,6 @@
 import prisma from "./db";
-import { v4 as uuid } from "uuid";
 
-import { testFunc } from "../sockets/server.socket";
-import { NotificationCreate } from "../types/notification";
+import { Notification } from "../types/notification";
 import { UserId } from "../types/id";
 
 async function getNotifications(userId: UserId) {
@@ -19,16 +17,24 @@ async function getNotifications(userId: UserId) {
   }
 }
 
-async function createNotification(notification: NotificationCreate) {
+async function createNotification(
+  notification: Notification
+): Promise<Notification[]> {
   try {
     console.log("NotificationModel.createNotification()");
     const result = await prisma.notification.create({
       data: notification,
     });
-    return result;
+    console.log(result);
+    const notifications = await prisma.notification.findMany({
+      where: { forUserId: notification.forUserId, read: false },
+      orderBy: { date: "desc" },
+    });
+    if (!notifications) throw "no unread notifications after create";
+    return notifications;
   } catch (err) {
     console.error("ERROR: ", err);
-    return null;
+    return [];
   }
 }
 
@@ -47,19 +53,10 @@ async function markNotificationAsRead(notificationId: string) {
   // }
 }
 
-//----------------------------------------------------------------
-// TEST
-//----------------------------------------------------------------
-
-function sendTestSocketMessage() {
-  testFunc("black rubber cock");
-}
-
 const NotificationModel = {
   getNotifications,
   createNotification,
   markNotificationAsRead,
-  sendTestSocketMessage,
 };
 
 export default NotificationModel;

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import EmailValidator from "email-validator";
 
+import { sendNotificationsOnSocket } from "../sockets/server.socket";
 import UserModel from "../models/user.model";
 import ConnectionModel from "../models/connection.model";
 import NotificationModel from "../models/notification.model";
-import NotificationController from "./notification.controller";
 
 async function initiateConnect(req: Request, res: Response): Promise<void> {
   try {
@@ -59,7 +59,15 @@ async function requestConnect(req: Request, res: Response): Promise<void> {
       if (!response) throw "error creating connection request";
     }
     // TODO: HERE TESTING
-    NotificationModel.sendTestSocketMessage();
+    const unreadNotifications = await NotificationModel.createNotification({
+      forUserId: target.userId,
+      fromUserId: initiator.userId,
+      fromUserName: initiator.firstName,
+      message: `${initiator.firstName} wants to connect accounts with you`,
+    });
+    if (unreadNotifications.length) {
+      sendNotificationsOnSocket(unreadNotifications);
+    }
     res.status(200).send({ success: true });
   } catch (err) {
     console.error(err);
