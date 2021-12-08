@@ -35,23 +35,6 @@ async function getProjections(req: Request, res: Response) {
     // Checks if user exists, if not returns null
     const user = await UserModel.getUser(userId);
 
-    // If user redirected from checkout page, url includes query string
-    // so that can request Stripe customer id realted to this transaction
-    const { session_id } = req.query;
-    console.log("🎯 session_id", session_id);
-    if (session_id && user) {
-      const session = await stripe.checkout.sessions.retrieve(session_id);
-      console.log("🎯 session", session);
-      const stripeCustomerId = session.customer;
-      const stripeCustomer = await stripe.customers.retrieve(session.customer);
-      console.log("🎯 customerId", stripeCustomerId);
-      const updatedUser = await UserModel.updateStripeCustomerId(
-        userId,
-        stripeCustomerId
-      );
-      console.log("🎯 updatedUserstripeCusId", updatedUser?.stripeCustomerId);
-    }
-
     if (user) {
       const projectionsForQueriedDate = await compileTotalProjections(
         userId,

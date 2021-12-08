@@ -14,7 +14,7 @@ model User {
   currency           String   @default("EUR")
   linkedUserIds      String[]
   activeSubscription Boolean  @default(false)
-  stripeCustomerId   String?
+  stripeCustomerId   String?  @unique
 }
 
 model Transaction {

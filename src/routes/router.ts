@@ -65,5 +65,5 @@ router.post(
   express.json({ type: "application/json" }),
   subscriptionController.webhook
 );
-router.get("success", subscriptionController.getSuccessPage);
+router.post("/add-customer-id", subscriptionController.addStripeCustomerId);
 export default router;

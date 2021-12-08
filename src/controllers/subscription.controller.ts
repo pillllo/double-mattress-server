@@ -56,19 +56,20 @@ async function createCheckoutSession(req: Request, res: Response) {
   }
 }
 
-async function getSuccessPage(req: Request, res: Response) {
+async function addStripeCustomerId(req: Request, res: Response) {
   try {
-    const { session_id } = req.query;
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const { sessionId, userId } = req.body;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
     const stripeCustomerId = session.customer;
-    const stripeCustomer = await stripe.customers.retrieve(session.customer);
-    console.log("🎯 updatedUser - stripeCusId", stripeCustomerId);
-    res.send(
-      `<html><body><h1>Thanks for your order, ${stripeCustomer.name}! ${stripeCustomerId}</h1></body></html>`
+    // const stripeCustomer = await stripe.customers.retrieve(session.customer);
+    const updatedUser = await UserModel.updateStripeCustomerId(
+      userId,
+      stripeCustomerId
     );
+    res.status(201).send(updatedUser);
   } catch (error) {
     console.error(error);
-    res.status(400).send("Could not get success page");
+    res.status(400).send("Could not add checkout session id");
   }
 }
 
@@ -150,7 +151,7 @@ async function createCustomerPortal(req: Request, res: Response) {
 const subscriptionController = {
   testStripe,
   createCheckoutSession,
-  getSuccessPage,
+  addStripeCustomerId,
   createCustomerPortal,
   webhook,
 };
