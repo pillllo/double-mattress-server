@@ -54,6 +54,53 @@ async function createCheckoutSession(req: Request, res: Response) {
     res.status(400).send("Could not create the checkout session");
   }
 }
+
+async function webhook(req: Request, res: Response) {
+  let event = req.body;
+  let subscription;
+  let status;
+  // Handle the event
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      const paymentIntent = event.data.object;
+      status = paymentIntent.status;
+      console.log(`paymentIntent status is ${status}.`);
+      // Then define and call a method to handle the subscription trial ending.
+      // handleSubscriptionTrialEnding(subscription);
+      break;
+    case "customer.subscription.created":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(`Subscription status is ${status}.`, subscription.id);
+      // Then define and call a method to handle the subscription created.
+      // handleSubscriptionCreated(subscription);
+      break;
+    case "customer.subscription.deleted":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(
+        `Subscription status for customer ${subscription.customer} with subscritpion ${subscription.id} is ${status}.`
+      );
+      // Then define and call a method to handle the subscription deleted.
+      // handleSubscriptionDeleted(subscriptionDeleted);
+      break;
+    case "customer.subscription.updated":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(
+        `Subscription status for customer ${subscription.customer} with subscritpion ${subscription.id} is ${status}.`
+      );
+      // Then define and call a method to handle the subscription update.
+      // handleSubscriptionUpdated(subscription);
+      break;
+    default:
+      // Unexpected event type
+      console.log(`Unhandled event type ${event.type}.`);
+  }
+  // Return a 200 response to acknowledge receipt of the event
+  res.status(200).send("Event received");
+}
+
 async function createCustomerPortal(req: Request, res: Response) {
   try {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
@@ -75,48 +122,6 @@ async function createCustomerPortal(req: Request, res: Response) {
     console.error(error);
     res.status(400).send("Could not create customer portal");
   }
-}
-
-async function webhook(req: Request, res: Response) {
-  let event = req.body;
-  let subscription;
-  let status;
-  // Handle the event
-  switch (event.type) {
-    case "customer.subscription.trial_will_end":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription trial ending.
-      // handleSubscriptionTrialEnding(subscription);
-      break;
-    case "customer.subscription.deleted":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription deleted.
-      // handleSubscriptionDeleted(subscriptionDeleted);
-      break;
-    case "customer.subscription.created":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`, subscription.id);
-      // Then define and call a method to handle the subscription created.
-      // handleSubscriptionCreated(subscription);
-      break;
-    case "customer.subscription.updated":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription update.
-      // handleSubscriptionUpdated(subscription);
-      break;
-    default:
-      // Unexpected event type
-      console.log(`Unhandled event type ${event.type}.`);
-  }
-  // Return a 200 response to acknowledge receipt of the event
-  res.status(200).send("Event received");
 }
 
 const subscriptionController = {

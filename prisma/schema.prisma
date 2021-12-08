@@ -13,6 +13,7 @@ model User {
   email              String   @unique
   currency           String   @default("EUR")
   linkedUserIds      String[]
+  stripeCustomerId   String?
   activeSubscription Boolean  @default(false)
 }
 
