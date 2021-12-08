@@ -117,9 +117,26 @@ async function createUser(userData: NewUserRequest) {
 }
 
 // TODO: implement proper updateUser functionality
-async function updateUser() {
+async function updateUser(userId: string, property: string, value: string) {
   try {
     console.log("user.model.updateUser()");
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+async function updateStripeCustomerId(userId: string, customerId: string) {
+  try {
+    console.log("user.model.updateStripeCustomerId()");
+    const updatedUser = await prisma.user.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        stripeCustomerId: customerId,
+      },
+    });
+    return updatedUser;
   } catch (err) {
     console.error("ERROR: ", err);
   }
@@ -156,6 +173,7 @@ export default {
   getUserIds,
   createUser,
   updateUser,
+  updateStripeCustomerId,
   deleteUser,
 };
 

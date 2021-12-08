@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import UserModel from "../models/user.model";
 const environment = process.env.ENVIRONMENT || "development";
 require("custom-env").env(environment);
 
 // Set your secret key. Remember to switch to your live secret key in production.
 const Stripe = require("stripe");
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY_TEST);
+export const stripe = Stripe(process.env.STRIPE_SECRET_KEY_TEST);
 const DOMAIN = process.env.DOMAIN;
 
 async function testStripe(req: Request, res: Response) {
@@ -42,7 +43,9 @@ async function createCheckoutSession(req: Request, res: Response) {
       ],
       payment_method_types: ["card"],
       mode: "subscription",
-      success_url: `${DOMAIN}/projections`,
+      // success_url: `${DOMAIN}/projections`,
+      // success_url: `${DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/subscription`,
     });
     console.log("🎯 checkOut session", session.id);
@@ -52,6 +55,22 @@ async function createCheckoutSession(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not create the checkout session");
+  }
+}
+
+async function getSuccessPage(req: Request, res: Response) {
+  try {
+    const { session_id } = req.query;
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const stripeCustomerId = session.customer;
+    const stripeCustomer = await stripe.customers.retrieve(session.customer);
+    console.log("🎯 updatedUser - stripeCusId", stripeCustomerId);
+    res.send(
+      `<html><body><h1>Thanks for your order, ${stripeCustomer.name}! ${stripeCustomerId}</h1></body></html>`
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not get success page");
   }
 }
 
@@ -133,6 +152,7 @@ async function createCustomerPortal(req: Request, res: Response) {
 const subscriptionController = {
   testStripe,
   createCheckoutSession,
+  getSuccessPage,
   createCustomerPortal,
   webhook,
 };
