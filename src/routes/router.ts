@@ -65,5 +65,5 @@ router.post(
   express.json({ type: "application/json" }),
   subscriptionController.webhook
 );
-router.get("success", subscriptionController.getSuccessPage);
+router.get("/success?", subscriptionController.getSuccessPage);
 export default router;

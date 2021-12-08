@@ -60,11 +60,12 @@ async function createCheckoutSession(req: Request, res: Response) {
 
 async function getSuccessPage(req: Request, res: Response) {
   try {
-    const { session_id } = req.query;
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    // const { session_id } = req.query;
+    const id = req.query.session_id;
+    console.log("🎯 sessionId", id);
+    const session = await stripe.checkout.sessions.retrieve(id);
     const stripeCustomerId = session.customer;
     const stripeCustomer = await stripe.customers.retrieve(session.customer);
-    console.log("🎯 updatedUser - stripeCusId", stripeCustomerId);
     res.send(
       `<html><body><h1>Thanks for your order, ${stripeCustomer.name}! ${stripeCustomerId}</h1></body></html>`
     );
