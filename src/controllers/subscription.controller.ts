@@ -66,7 +66,13 @@ async function addStripeCustomerId(req: Request, res: Response) {
       userId,
       stripeCustomerId
     );
-    res.status(201).send(updatedUser);
+    const censoredUser = {
+      ...updatedUser,
+      email: "",
+      linkedUserIds: [],
+      stripeCustomerId: "",
+    };
+    res.status(201).send(censoredUser);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not add checkout session id");
