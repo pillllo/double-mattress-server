@@ -62,10 +62,21 @@ async function addStripeCustomerId(req: Request, res: Response) {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     const stripeCustomerId = session.customer;
     // const stripeCustomer = await stripe.customers.retrieve(session.customer);
-    const updatedUser = await UserModel.updateStripeCustomerId(
-      userId,
-      stripeCustomerId
-    );
+    const allUserIds = await UserModel.getUserIds(userId);
+
+    if (allUserIds) {
+      await Promise.all(
+        allUserIds.map(async (userId) => {
+          await UserModel.updateStripeCustomerId(userId, stripeCustomerId);
+        })
+      );
+    }
+    // const updatedUser = await UserModel.updateStripeCustomerId(
+    //   userId,
+    //   stripeCustomerId
+    // );
+    const updatedUser = await UserModel.getUser(userId);
+
     const censoredUser = {
       ...updatedUser,
       email: "",
