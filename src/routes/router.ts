@@ -41,7 +41,7 @@ router.post("/dashboard", dashboardController.getDashboard);
 // PROJECTIONS
 //----------------------------------------------------------------
 
-router.post("/projections", projectionController.getProjections);
+router.post("/projections/:sessionId", projectionController.getProjections);
 router.post("/projections/create", projectionController.createProjectedChange);
 router.delete("/projections", projectionController.deleteProjectedChange);
 
