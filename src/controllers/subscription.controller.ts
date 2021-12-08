@@ -71,19 +71,15 @@ async function addStripeCustomerId(req: Request, res: Response) {
         })
       );
     }
-    // const updatedUser = await UserModel.updateStripeCustomerId(
-    //   userId,
-    //   stripeCustomerId
-    // );
     const updatedUser = await UserModel.getUser(userId);
 
-    const censoredUser = {
-      ...updatedUser,
-      email: "",
-      linkedUserIds: [],
-      stripeCustomerId: "",
-    };
-    res.status(201).send(censoredUser);
+    // const censoredUser = {
+    //   ...updatedUser,
+    //   email: "",
+    //   linkedUserIds: [],
+    //   stripeCustomerId: "",
+    // };
+    res.status(201).send(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not add checkout session id");
