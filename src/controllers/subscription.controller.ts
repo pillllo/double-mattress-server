@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import UserModel from "../models/user.model";
 const environment = process.env.ENVIRONMENT || "development";
 require("custom-env").env(environment);
 
 // Set your secret key. Remember to switch to your live secret key in production.
 const Stripe = require("stripe");
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY_TEST);
+export const stripe = Stripe(process.env.STRIPE_SECRET_KEY_TEST);
 const DOMAIN = process.env.DOMAIN;
 
 async function testStripe(req: Request, res: Response) {
@@ -42,10 +43,10 @@ async function createCheckoutSession(req: Request, res: Response) {
       ],
       payment_method_types: ["card"],
       mode: "subscription",
-      success_url: `${DOMAIN}/projections`,
+      // success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${DOMAIN}/confirm?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/subscription`,
     });
-    console.log("🎯 checkOut session", session.id);
     console.log("🎯 checkOut session", session);
     console.log("🎯 checkOut created");
     res.redirect(303, session.url);
@@ -54,6 +55,89 @@ async function createCheckoutSession(req: Request, res: Response) {
     res.status(400).send("Could not create the checkout session");
   }
 }
+
+async function addStripeCustomerId(req: Request, res: Response) {
+  try {
+    const { sessionId, userId } = req.body;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const stripeCustomerId = session.customer;
+    // const stripeCustomer = await stripe.customers.retrieve(session.customer);
+    const allUserIds = await UserModel.getUserIds(userId);
+
+    if (allUserIds) {
+      await Promise.all(
+        allUserIds.map(async (userId) => {
+          await UserModel.updateStripeCustomerId(userId, stripeCustomerId);
+        })
+      );
+    }
+    const updatedUser = await UserModel.getUser(userId);
+
+    // const censoredUser = {
+    //   ...updatedUser,
+    //   email: "",
+    //   linkedUserIds: [],
+    //   stripeCustomerId: "",
+    // };
+    res.status(201).send(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Could not add checkout session id");
+  }
+}
+
+async function webhook(req: Request, res: Response) {
+  let event = req.body;
+  let subscription;
+  let status;
+  // Handle the event
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      const paymentIntent = event.data.object;
+      status = paymentIntent.status;
+      console.log(`paymentIntent status is ${status}.`);
+      // Then define and call a method to handle the subscription trial ending.
+      // handleSubscriptionTrialEnding(subscription);
+      break;
+    case "customer.subscription.created":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(`Subscription status is ${status}.`, subscription.id);
+      // Then define and call a method to handle the subscription created.
+      // handleSubscriptionCreated(subscription);
+      break;
+    case "customer.subscription.deleted":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(
+        `Subscription status for customer ${subscription.customer} with subscritpion ${subscription.id} is ${status}.`
+      );
+      // Then define and call a method to handle the subscription deleted.
+      // handleSubscriptionDeleted(subscriptionDeleted);
+      break;
+    case "customer.subscription.updated":
+      subscription = event.data.object;
+      status = subscription.status;
+      console.log(
+        `Subscription status for customer ${subscription.customer} with subscritpion ${subscription.id} is ${status}.`
+      );
+      // Then define and call a method to handle the subscription update.
+      // handleSubscriptionUpdated(subscription);
+      break;
+    case "invoice.paid":
+      subscription = event.data.object;
+      // Continue to provision the subscription as payments continue to be made.
+      // Store the status in your database and check when a user accesses your service.
+      // This approach helps you avoid hitting rate limits.
+      break;
+    default:
+      // Unexpected event type
+      console.log(`Unhandled event type ${event.type}.`);
+  }
+  // Return a 200 response to acknowledge receipt of the event
+  res.status(200).send("Event received");
+}
+
 async function createCustomerPortal(req: Request, res: Response) {
   try {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
@@ -77,51 +161,10 @@ async function createCustomerPortal(req: Request, res: Response) {
   }
 }
 
-async function webhook(req: Request, res: Response) {
-  let event = req.body;
-  let subscription;
-  let status;
-  // Handle the event
-  switch (event.type) {
-    case "customer.subscription.trial_will_end":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription trial ending.
-      // handleSubscriptionTrialEnding(subscription);
-      break;
-    case "customer.subscription.deleted":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription deleted.
-      // handleSubscriptionDeleted(subscriptionDeleted);
-      break;
-    case "customer.subscription.created":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`, subscription.id);
-      // Then define and call a method to handle the subscription created.
-      // handleSubscriptionCreated(subscription);
-      break;
-    case "customer.subscription.updated":
-      subscription = event.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription update.
-      // handleSubscriptionUpdated(subscription);
-      break;
-    default:
-      // Unexpected event type
-      console.log(`Unhandled event type ${event.type}.`);
-  }
-  // Return a 200 response to acknowledge receipt of the event
-  res.status(200).send("Event received");
-}
-
 const subscriptionController = {
   testStripe,
   createCheckoutSession,
+  addStripeCustomerId,
   createCustomerPortal,
   webhook,
 };

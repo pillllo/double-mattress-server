@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
 import moment from "moment";
 moment().format();
+import { stripe } from "./subscription.controller";
 import ProjectionModel from "../models/projection.model";
 import UserModel from "../models/user.model";
+import DateRange from "../types/dateRange";
 import Projection, {
   CategoryAverages,
   Savings,
   TypeAverages,
 } from "../types/projection";
-import DateRange from "../types/dateRange";
 import { ProjectedChange } from ".prisma/client";
-// import ProjectedChange from "../types/projectedChange";
 
 const categories = [
   "Salary",
@@ -34,6 +34,7 @@ async function getProjections(req: Request, res: Response) {
     const { userId, date } = req.body;
     // Checks if user exists, if not returns null
     const user = await UserModel.getUser(userId);
+
     if (user) {
       const projectionsForQueriedDate = await compileTotalProjections(
         userId,

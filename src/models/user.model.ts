@@ -117,7 +117,7 @@ async function createUser(userData: NewUserRequest) {
 }
 
 // TODO: implement proper updateUser functionality
-async function updateUser() {
+async function updateUser(userId: string, property: string, value: string) {
   try {
     console.log("user.model.updateUser()");
   } catch (err) {
@@ -148,6 +148,53 @@ async function deleteUser(userId: string) {
   }
 }
 
+//----------------------------------------------------------------
+// USERS - STRIPE & SUBSCRIPTION RELATED ACTIONS
+//----------------------------------------------------------------
+
+async function updateStripeCustomerId(userId: string, customerId: string) {
+  try {
+    console.log("user.model.updateStripeCustomerId()");
+    const updatedUser = await prisma.user.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        stripeCustomerId: customerId,
+        activeSubscription: true,
+      },
+    });
+    return updatedUser;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// async function updateSubscriptionStatus(
+//   customerId: string,
+//   subscriptionStatus: boolean
+// ) {
+//   try {
+//     const user = await prisma.user.find({
+//       where: {
+//         stripeCustomerId: customerId,
+//       },
+//     });
+//     console.log("user.model.updateStripeCustomerId()");
+//     const updatedUser = await prisma.user.update({
+//       where: {
+//         userId: user.userId,
+//       },
+//       data: {
+//         activeSubscription: subscriptionStatus,
+//       },
+//     });
+//     return updatedUser;
+//   } catch (err) {
+//     console.error("ERROR: ", err);
+//   }
+// }
+
 export default {
   getAllUserIds,
   getUser,
@@ -156,6 +203,7 @@ export default {
   getUserIds,
   createUser,
   updateUser,
+  updateStripeCustomerId,
   deleteUser,
 };
 
