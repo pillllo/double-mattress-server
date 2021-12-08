@@ -125,23 +125,6 @@ async function updateUser(userId: string, property: string, value: string) {
   }
 }
 
-async function updateStripeCustomerId(userId: string, customerId: string) {
-  try {
-    console.log("user.model.updateStripeCustomerId()");
-    const updatedUser = await prisma.user.update({
-      where: {
-        userId: userId,
-      },
-      data: {
-        stripeCustomerId: customerId,
-      },
-    });
-    return updatedUser;
-  } catch (err) {
-    console.error("ERROR: ", err);
-  }
-}
-
 // TODO: tried implementing proper return types but TS driving me up the wall
 async function deleteUser(userId: string) {
   try {
@@ -164,6 +147,53 @@ async function deleteUser(userId: string) {
     console.error("ERROR: ", err);
   }
 }
+
+//----------------------------------------------------------------
+// USERS - STRIPE & SUBSCRIPTION RELATED ACTIONS
+//----------------------------------------------------------------
+
+async function updateStripeCustomerId(userId: string, customerId: string) {
+  try {
+    console.log("user.model.updateStripeCustomerId()");
+    const updatedUser = await prisma.user.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        stripeCustomerId: customerId,
+        activeSubscription: true,
+      },
+    });
+    return updatedUser;
+  } catch (err) {
+    console.error("ERROR: ", err);
+  }
+}
+
+// async function updateSubscriptionStatus(
+//   customerId: string,
+//   subscriptionStatus: boolean
+// ) {
+//   try {
+//     const user = await prisma.user.find({
+//       where: {
+//         stripeCustomerId: customerId,
+//       },
+//     });
+//     console.log("user.model.updateStripeCustomerId()");
+//     const updatedUser = await prisma.user.update({
+//       where: {
+//         userId: user.userId,
+//       },
+//       data: {
+//         activeSubscription: subscriptionStatus,
+//       },
+//     });
+//     return updatedUser;
+//   } catch (err) {
+//     console.error("ERROR: ", err);
+//   }
+// }
 
 export default {
   getAllUserIds,
