@@ -43,10 +43,10 @@ async function createCheckoutSession(req: Request, res: Response) {
       ],
       payment_method_types: ["card"],
       mode: "subscription",
-      success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
+      // success_url: `${DOMAIN}/projections?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${DOMAIN}/confirm?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/subscription`,
     });
-    console.log("🎯 checkOut session", session.id);
     console.log("🎯 checkOut session", session);
     console.log("🎯 checkOut created");
     res.redirect(303, session.url);
@@ -71,19 +71,15 @@ async function addStripeCustomerId(req: Request, res: Response) {
         })
       );
     }
-    // const updatedUser = await UserModel.updateStripeCustomerId(
-    //   userId,
-    //   stripeCustomerId
-    // );
     const updatedUser = await UserModel.getUser(userId);
 
-    const censoredUser = {
-      ...updatedUser,
-      email: "",
-      linkedUserIds: [],
-      stripeCustomerId: "",
-    };
-    res.status(201).send(censoredUser);
+    // const censoredUser = {
+    //   ...updatedUser,
+    //   email: "",
+    //   linkedUserIds: [],
+    //   stripeCustomerId: "",
+    // };
+    res.status(201).send(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(400).send("Could not add checkout session id");

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Notification" ALTER COLUMN "date" DROP NOT NULL,
+ALTER COLUMN "read" DROP NOT NULL;

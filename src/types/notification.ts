@@ -1,8 +1,11 @@
 import { UserId } from "./id";
 
-export type NotificationCreate = {
+export type Notification = {
+  id?: number;
   forUserId: UserId;
-  fromUserId?: UserId;
-  fromUserName?: string;
+  fromUserId?: UserId | null;
+  fromUserName?: string | null;
+  date?: string | Date | null;
   message: string;
+  read?: boolean | null;
 };
