@@ -1,6 +1,7 @@
 import prisma from "./db";
 import { v4 as uuid } from "uuid";
 
+import { testFunc } from "../sockets/server.socket";
 import { NotificationCreate } from "../types/notification";
 import { UserId } from "../types/id";
 
@@ -46,10 +47,19 @@ async function markNotificationAsRead(notificationId: string) {
   // }
 }
 
+//----------------------------------------------------------------
+// TEST
+//----------------------------------------------------------------
+
+function sendTestSocketMessage() {
+  testFunc("black rubber cock");
+}
+
 const NotificationModel = {
   getNotifications,
   createNotification,
   markNotificationAsRead,
+  sendTestSocketMessage,
 };
 
 export default NotificationModel;

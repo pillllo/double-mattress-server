@@ -13,3 +13,9 @@ export type SocketAuth = {
 export type SocketError = {
   message: string;
 };
+
+export type SocketPool = {
+  [key: string]: {
+    socketId: string;
+  };
+};

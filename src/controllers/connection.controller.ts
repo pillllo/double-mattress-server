@@ -4,6 +4,7 @@ import EmailValidator from "email-validator";
 import UserModel from "../models/user.model";
 import ConnectionModel from "../models/connection.model";
 import NotificationModel from "../models/notification.model";
+import NotificationController from "./notification.controller";
 
 async function initiateConnect(req: Request, res: Response): Promise<void> {
   try {
@@ -57,6 +58,8 @@ async function requestConnect(req: Request, res: Response): Promise<void> {
       );
       if (!response) throw "error creating connection request";
     }
+    // TODO: HERE TESTING
+    NotificationModel.sendTestSocketMessage();
     res.status(200).send({ success: true });
   } catch (err) {
     console.error(err);

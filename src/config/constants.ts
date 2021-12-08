@@ -11,4 +11,6 @@ export const SOCKET_EVENTS = {
   CONNECTION: "connection", // server
   DISCONNECT: "disconnect",
   DISCONNECTING: "disconnecting",
+  ID_REQUEST: "id_request",
+  ID_CONFIRM: "id_confirm",
 };
