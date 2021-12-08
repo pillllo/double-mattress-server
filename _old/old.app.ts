@@ -3,9 +3,10 @@ import fs from "fs";
 import http from "http";
 import express from "express";
 import cors from "cors";
+import { Server as io } from "socket.io";
 
 import router from "./routes/router";
-import { init as initSocketServer } from "./sockets/server.socket";
+import registerSocketHandlers from "./sockets";
 
 function bootstrapServer() {
   // support switching between .env.production and .env.development
@@ -67,9 +68,14 @@ function bootstrapServer() {
 
   // 2. create Node HTTP server and pass it the Express instance
   const httpServer = http.createServer(expressApp);
-  // 3. pass the HTTP server to bind a socket.io instance and listeners
-  initSocketServer(httpServer);
-  // 4. listen to the HTTP server, NOT the Express app
+  // 3.create socket.io server, and pass it the HTTP server
+  const socketServer = new io(httpServer);
+  // 4. declare socket listeners
+  registerSocketHandlers(socketServer);
+  socketServer.on("connection", (socket) => {
+    console.log("Socket connection initiated: ", socket.id);
+  });
+  // 5. listen to the HTTP server, NOT the Express app
   httpServer.listen(PORT, () => {
     console.log(`🚀 Server is listening at ${PORT}`);
   });

@@ -60,13 +60,13 @@ model ProjectedChange {
 }
 
 model Notification {
-  notificationId Int      @id @default(autoincrement())
+  notificationId Int       @id @default(autoincrement())
   forUserId      String
   fromUserId     String?
-  fromUserName   String?  @default("System")
-  date           DateTime @default(now())
+  fromUserName   String?   @default("System")
+  date           DateTime? @default(now())
   message        String
-  read           Boolean  @default(false)
+  read           Boolean?  @default(false)
 }
 
 model ConnectionRequest {
