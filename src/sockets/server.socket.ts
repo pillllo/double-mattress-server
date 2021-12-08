@@ -14,6 +14,15 @@ import {
 
 import { SOCKET_EVENTS as EVENTS } from "../config/constants";
 
+const CORS_CONFIG = {
+  origin: [
+    "http://localhost:3000",
+    "https://checkout.stripe.com",
+    "https://double-mattress.herokuapp.com",
+  ],
+  methods: "*",
+};
+
 //----------------------------------------------------------------
 // PRIVATE VARS
 //----------------------------------------------------------------
@@ -33,7 +42,7 @@ function _isAuthorised(socket: Socket) {
 //----------------------------------------------------------------
 
 export function init(httpServer: any) {
-  _socketServer = new io(httpServer);
+  _socketServer = new io(httpServer, { cors: CORS_CONFIG });
   // bind connection listeners
   _socketServer.on(EVENTS.CONNECTION, (socket: Socket): void => {
     console.log("socket connected with id: ", socket.id);
