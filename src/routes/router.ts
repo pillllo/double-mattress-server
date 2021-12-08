@@ -53,4 +53,16 @@ router.post("/connect/initiate", connectionController.initiateConnect);
 router.post("/connect/confirm", connectionController.requestConnect);
 router.post("/connect/complete", connectionController.completeConnect);
 
+//----------------------------------------------------------------
+// SUBSCRIPTIONS
+//----------------------------------------------------------------
+router.post(
+  "/create-checkout-session",
+  subscriptionController.createCheckoutSession
+);
+router.post(
+  "/webhook",
+  express.json({ type: "application/json" }),
+  subscriptionController.webhook
+);
 export default router;
