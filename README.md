@@ -2,44 +2,73 @@
 
 A mobile-first web app that helps couples visualise and forecast combined financial infomation.
 
+This repository is for the server-side of the project. If you want to have access to the client repository click [here](https://github.com/pillllo/double-mattress).
+
 # Screenshots
 
 <p>
-<img src="readme_screenshot_1.png" />
-<img src="readme_screenshot_2.png" />
+<img src="images/readme_screenshot_1.png" />
+<img src="images/readme_screenshot_2.png" />
 </p>
-
-This repository is for the server-side of the project. If you want to have access to the client repository click [here](https://github.com/pillllo/double-mattress).
 
 # Getting started (server)
 
-1. Clone this repo and enter
+Except for the regular suspects
+
+- git
+- Node & npm
+- PostgreSQL (see step 3 below)
+
+You need these things to work on the Double Mattress app. Once you have them installed, follow the steps below:
+
+1. Clone this repo:
 
 ```
+cd YOUR_DEVELOPMENT_DIRECTORY
 git clone https://github.com/pillllo/double-mattress-server
-cd mentee-match
 ```
 
-2. Install dependencies
+2. Install dependencies using NPM:
 
 ```
+cd double-mattress-server
 npm install
 ```
 
-3. Start the server
+3. [Install PostgreSQL](https://www.postgresql.org/download/) and [start the PostgreSQL server](https://tableplus.com/blog/2018/10/how-to-start-stop-restart-postgresql-server.html)
+
+4. The server requires a `.env` ("dotenv") file to run. If not present, create one called `.env.development` in the server directory and add these variables:
+
+```
+PORT=6666
+DATABASE_URL=postgresql://YOUR_POSTGRES_USERNAME:YOUR_POSTGRES_PASSWORD@localhost:5432/double-mattress?schema=public
+STRIPE_SECRET_KEY_TEST=YOUR_STRIPE_SECRET_KEY
+DOMAIN=http://localhost:3000
+```
+
+Save the file.
+
+5. Start the server in development mode
 
 ```
 npm run dev
 ```
 
-4. Install the client repo: Follow instructions in `Getting started` in the [Double Mattress client repo](https://github.com/pillllo/double-mattress).
+6. Populate your local database by running the `seedDb.mjs` file in a separate terminal
+
+```
+node scripts/seedDb.mjs
+```
+
+7. Note: the "Projections" part of the app is behind a Stripe paywall. To get access you'll need to create your own Stripe account and create a test key. You'll need to add it to your `.env` file in step 4 above.
+
+8. Install & run the client: follow instructions in `Getting started` in the [Double Mattress client repo](https://github.com/pillllo/double-mattress).
 
 # Tech Stack
 
 - [Node.js](https://nodejs.org/en/) with [TypeScript](https://www.typescriptlang.org/)
 - [Express.js](https://expressjs.com/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Prisma](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/)
 - [Socket.io](https://socket.io/)
 - [Stripe](https://stripe.com)
 - [Heroku](https://heroku.com)
@@ -56,15 +85,17 @@ npm run dev
 # Server structure
 
 - `/src`: TypeScript source files
-- `/build`: compiled JS from TypeScript source files
+- `/build`: will be created if you compile JS from TypeScript source files using `npm run
 - `/prisma`: database schema and migration files
 - `/scripts`: seed file for populating the database
 
+# API documentation
+
 # Get all user IDs (for development purposes only)
 
-## `GET /userIds`
+### `GET /userIds`
 
-Get userIds for all users in the database. This will be retired after
+Get userIds for all users in the database.
 
 **Request body**
 

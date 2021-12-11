@@ -44,16 +44,6 @@ function bootstrapServer() {
   expressApp.use(express.json());
   expressApp.use(express.urlencoded({ extended: true }));
   expressApp.use(express.static("public"));
-  // "security"
-  // expressApp.use((req, res, next) => {
-  //   const jwt = req.headers["client-jwt"];
-  //   if (jwt !== process.env.CLIENT_JWT) {
-  //     console.log("Auth failed");
-  //     res.status(404).send();
-  //   } else {
-  //     next();
-  //   }
-  // });
   // Logging middleware
   expressApp.use((req, res, next) => {
     console.log(`${req.method} request received for url: ${req.url}`);

@@ -1,10 +1,20 @@
 import axios from "axios";
 
-import { getRandomNumber as random, getDaysInMonth } from "./helpers.mjs";
-
 //----------------------------------------------------------------
 // HELPER FUNCTIONS
 //----------------------------------------------------------------
+
+function getRandomNumber(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+// Month in JavaScript is 0-indexed (January is 0, February is 1, etc),
+// but by using 0 as the day it will give us the last day of the prior
+// month. So passing in 1 as the month number will return the last day
+// of January, not February
+function getDaysInMonth(month, year) {
+  return new Date(year, month, 0).getDate();
+}
 
 function createUser(name, currency = "EUR") {
   const user = {
@@ -120,8 +130,8 @@ async function processTransactions(transactions) {
 // MAIN
 //----------------------------------------------------------------
 
-// these can be changed by some are specifically referenced by property
-// in main() e.g. when adding salary entries, bills etc
+// these can be changed, but some are specifically referenced by property
+// in main() e.g. when adding salary entries, bills et - take care
 
 const CATEGORIES = {
   salary: "Salary",
@@ -135,11 +145,10 @@ const CATEGORIES = {
 };
 
 // change these freely to alter script behaviour
-// const SERVER_URL = "http://localhost:6666";
-const SERVER_URL = "http://localhost:3001";
-const MONTHS_TO_GENERATE = 6;
-const USER_1_NAME = "Kasia";
-const USER_2_NAME = "Michal";
+const SERVER_URL = "http://localhost:6666";
+const MONTHS_TO_GENERATE = 12;
+const USER_1_NAME = "Annie";
+const USER_2_NAME = "Ben";
 
 (async function main() {
   // create users
@@ -149,15 +158,8 @@ const USER_2_NAME = "Michal";
     const res1 = await axios.post(`${SERVER_URL}/users/create`, user1Data);
     if (!res1.data) throw new Error("server error");
     const user1 = res1.data;
-    console.log("user1.userId: ", user1.userId);
-    user2Data.linkedUserIds.push(user1.userId);
     const res2 = await axios.post(`${SERVER_URL}/users/create`, user2Data);
     const user2 = res2.data;
-    // TODO: update user1 -> user2.linkedIds[]
-    // user1.linkedUserIds.push(user2.userId);
-
-    // create categories
-    // output.categories = createCategories();
 
     // create [Transaction] for both user1 and user2
     let allTransactions = [];
