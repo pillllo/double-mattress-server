@@ -36,8 +36,7 @@ npm run dev
 
 # Tech Stack
 
-- [Node.js](https://nodejs.org/en/)
-- [TypeScript](https://www.typescriptlang.org/)
+- [Node.js](https://nodejs.org/en/) with [TypeScript](https://www.typescriptlang.org/)
 - [Express.js](https://expressjs.com/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Prisma](https://www.prisma.io/)
@@ -46,6 +45,13 @@ npm run dev
 - [Heroku](https://heroku.com)
 - [Figma](https://figma.com) & [FigJam](https://www.figma.com/figjam/)
 - A double mattress 🛏
+
+# Team
+
+- [Natalie Pilling](https://github.com/pillllo)
+- [James Foxlee](https://github.com/cortexlock)
+- [David Longaron](https://github.com/MrDfu)
+- [Liam Morris](https://github.com/Aothe)
 
 # Server structure
 
