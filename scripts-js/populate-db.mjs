@@ -137,9 +137,9 @@ const CATEGORIES = {
 // change these freely to alter script behaviour
 // const SERVER_URL = "http://localhost:6666";
 const SERVER_URL = "http://localhost:3001";
-const MONTHS_TO_GENERATE = 12;
-const USER_1_NAME = "Annie";
-const USER_2_NAME = "Ben";
+const MONTHS_TO_GENERATE = 6;
+const USER_1_NAME = "Kasia";
+const USER_2_NAME = "Michal";
 
 (async function main() {
   // create users
