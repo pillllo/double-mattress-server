@@ -42,7 +42,11 @@ function _isAuthorised(socket: Socket) {
 //----------------------------------------------------------------
 
 export function init(httpServer: any) {
+<<<<<<< HEAD
   _socketServer = new io(httpServer, { cors: CORS_CONFIG });
+=======
+  _socketServer = new io(httpServer);
+>>>>>>> dev
   // bind connection listeners
   _socketServer.on(EVENTS.CONNECTION, (socket: Socket): void => {
     console.log("socket connected with id: ", socket.id);
@@ -63,8 +67,14 @@ export function init(httpServer: any) {
     // request userId so we can correlate userId from data models
     // -> socket.id for sending future messages
     socket.on(EVENTS.ID.CONFIRM, (payload: any) => {
+<<<<<<< HEAD
       if (payload && payload.userId) {
         socketManager.addSocket(payload.userId, socket);
+=======
+      const { userId } = payload;
+      if (userId) {
+        socketManager.addSocket(userId, socket);
+>>>>>>> dev
         addNotificationEventHandlers(socket, socketManager);
         // TODO: get notifications and emit them on the socket
       } else {

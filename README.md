@@ -1,19 +1,64 @@
-# double-mattress
+# Double Mattress
 
-A responsive web app / PWA that helps couples visualise and forecast combined financial infomation. It is a Codeworks thesis (team) project by:
+A mobile-first web app that helps couples visualise and forecast combined financial infomation.
 
-- Natalie Pilling
-- James Foxlee
-- David Longaron
-- Liam Morris
+# Screenshots
 
-# Project structure
+<p>
+<img src="readme_screenshot_1.png" />
+<img src="readme_screenshot_2.png" />
+</p>
+
+This repository is for the server-side of the project. If you want to have access to the client repository click [here](https://github.com/pillllo/double-mattress).
+
+# Getting started (server)
+
+1. Clone this repo and enter
+
+```
+git clone https://github.com/pillllo/double-mattress-server
+cd mentee-match
+```
+
+2. Install dependencies
+
+```
+npm install
+```
+
+3. Start the server
+
+```
+npm run dev
+```
+
+4. Install the client repo: Follow instructions in `Getting started` in the [Double Mattress client repo](https://github.com/pillllo/double-mattress).
+
+# Tech Stack
+
+- [Node.js](https://nodejs.org/en/) with [TypeScript](https://www.typescriptlang.org/)
+- [Express.js](https://expressjs.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Prisma](https://www.prisma.io/)
+- [Socket.io](https://socket.io/)
+- [Stripe](https://stripe.com)
+- [Heroku](https://heroku.com)
+- [Figma](https://figma.com) & [FigJam](https://www.figma.com/figjam/)
+- A double mattress 🛏
+
+# Team
+
+- [Natalie Pilling](https://github.com/pillllo)
+- [James Foxlee](https://github.com/cortexlock)
+- [David Longaron](https://github.com/MrDfu)
+- [Liam Morris](https://github.com/Aothe)
+
+# Server structure
 
 - `/src`: TypeScript source files
 - `/build`: compiled JS from TypeScript source files
 - `/prisma`: database schema and migration files
-- `/scripts`: bash scripts etc for running on the command line
-- `/helpers`: useful utilities e.g. string manipulation, file system ops, math ops
+- `/scripts`: seed file for populating the database
 
 # Get all user IDs (for development purposes only)
 
