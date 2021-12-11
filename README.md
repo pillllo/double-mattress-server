@@ -19,7 +19,8 @@ Except for the regular suspects
 - Node & npm
 - PostgreSQL (see step 3 below)
 
-You need these things to work on the Double Mattress app. Once you have them installed, follow the steps below:
+You need these things to work on the Double Mattress app.
+Once you have them installed, follow the steps below:
 
 1. Clone this repo:
 
