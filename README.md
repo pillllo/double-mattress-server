@@ -1,6 +1,6 @@
 # Double Mattress
 
-A mobile-first web app that helps couples visualise and forecast combined financial infomation.
+A mobile-first web app that helps couples visualise and forecast combined financial information.
 
 This repository is for the server-side of the project. If you want to have access to the client repository click [here](https://github.com/pillllo/double-mattress).
 
