@@ -12,16 +12,7 @@ import {
   SocketError,
 } from "../types/socket";
 
-import { SOCKET_EVENTS as EVENTS } from "../config/constants";
-
-const CORS_CONFIG = {
-  origin: [
-    "http://localhost:3000",
-    "https://checkout.stripe.com",
-    "https://double-mattress.herokuapp.com",
-  ],
-  methods: "*",
-};
+import { CORS_CONFIG, SOCKET_EVENTS as EVENTS } from "../config/constants";
 
 //----------------------------------------------------------------
 // PRIVATE VARS
@@ -76,7 +67,6 @@ export function init(httpServer: any) {
         socketManager.addSocket(userId, socket);
 >>>>>>> dev
         addNotificationEventHandlers(socket, socketManager);
-        // TODO: get notifications and emit them on the socket
       } else {
         socket.disconnect();
       }
@@ -91,7 +81,7 @@ export function init(httpServer: any) {
   });
 }
 
-export function sendNotificationsOnSocket(notifications: Notification[]) {
+export function sendNotificationOnSocket(notifications: Notification[]) {
   console.log("sendNotificationsOnSocket()");
   const { forUserId } = notifications[0];
   const socketId = socketManager.getSocketIdForUser(forUserId);

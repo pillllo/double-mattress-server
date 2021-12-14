@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import EmailValidator from "email-validator";
 
-import { sendNotificationsOnSocket } from "../sockets/server.socket";
+import { sendNotificationOnSocket } from "../sockets/server.socket";
 import UserModel from "../models/user.model";
 import ConnectionModel from "../models/connection.model";
 import NotificationModel from "../models/notification.model";
@@ -66,7 +66,7 @@ async function requestConnect(req: Request, res: Response): Promise<void> {
       message: `${initiator.firstName} wants to connect accounts with you`,
     });
     if (unreadNotifications.length) {
-      sendNotificationsOnSocket(unreadNotifications);
+      sendNotificationOnSocket(unreadNotifications);
     }
     res.status(200).send({ success: true });
   } catch (err) {

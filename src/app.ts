@@ -7,6 +7,8 @@ import cors from "cors";
 import router from "./routes/router";
 import { init as initSocketServer } from "./sockets/server.socket";
 
+import { CORS_CONFIG } from "./config/constants";
+
 function bootstrapServer() {
   // support switching between .env.production and .env.development
   const environment = process.env.ENVIRONMENT || "development";
@@ -29,18 +31,8 @@ function bootstrapServer() {
 
   // 1. create Express app instance, configure static assets & routes
   const expressApp = express();
-  // const staticPath = path.join(__dirname, "./public");
-  const corsConfig = {
-    origin: [
-      "http://localhost:3000",
-      "https://checkout.stripe.com",
-      "https://double-mattress.herokuapp.com",
-    ],
-    credentials: true,
-    methods: "*",
-  };
-
-  expressApp.use(cors(corsConfig));
+  const staticPath = path.join(__dirname, "./public");
+  expressApp.use(cors(CORS_CONFIG));
   expressApp.use(express.json());
   expressApp.use(express.urlencoded({ extended: true }));
   expressApp.use(express.static("public"));

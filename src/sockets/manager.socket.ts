@@ -7,11 +7,10 @@ function SocketManager() {
 
   const addSocket = (userId: UserId, socket: Socket): void => {
     console.log("SocketManager.addSocket() with userId: ", userId);
-    console.log("_pool before add: ", _pool);
     _pool[userId] = {
       socketId: socket.id,
     };
-    console.log("_pool after add: ", _pool);
+    console.log("_pool after socket added: ", _pool);
   };
 
   const getUserIdForSocket = (socket: Socket): UserId | undefined => {
@@ -27,12 +26,9 @@ function SocketManager() {
   };
 
   const removeSocket = (socket: Socket): void => {
-    console.log(`SocketManager.removeSocket() for socket.id: ${socket.id}`);
-    console.log("_pool before delete: ", _pool);
     const userId = getUserIdForSocket(socket);
     if (userId) {
       delete _pool[userId];
-      console.log("_pool after delete: ", _pool);
     }
   };
 

@@ -11,15 +11,21 @@ This repository is for the server-side of the project. If you want to have acces
 <img src="images/readme_screenshot_2.png" />
 </p>
 
+# Server structure
+
+- `/src`: TypeScript source files
+- `/build`: will be created if you compile JS from TypeScript source files using `npm run
+- `/prisma`: database schema and migration files
+- `/scripts`: seed file for populating the database
+
 # Getting started (server)
 
-Except for the regular suspects
+You need these regular suspects:
 
 - git
 - Node & npm
 - PostgreSQL (see step 3 below)
 
-You need these things to work on the Double Mattress app.
 Once you have them installed, follow the steps below:
 
 1. Clone this repo:
@@ -82,13 +88,6 @@ node scripts/seedDb.mjs
 - [James Foxlee](https://github.com/cortexlock)
 - [David Longaron](https://github.com/MrDfu)
 - [Liam Morris](https://github.com/Aothe)
-
-# Server structure
-
-- `/src`: TypeScript source files
-- `/build`: will be created if you compile JS from TypeScript source files using `npm run
-- `/prisma`: database schema and migration files
-- `/scripts`: seed file for populating the database
 
 # API documentation
 

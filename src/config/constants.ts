@@ -1,4 +1,12 @@
-export const PREVIOUS_MONTHS_TO_INCLUDE_IN_AVERAGE = 6;
+export const CORS_CONFIG = {
+  origin: [
+    "http://localhost:3000",
+    "https://checkout.stripe.com",
+    "https://double-mattress.herokuapp.com",
+  ],
+  credentials: true,
+  methods: "*",
+};
 
 export const CONNECTION_REQUEST_STATUS = {
   OPEN: "open",
